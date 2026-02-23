@@ -15,6 +15,8 @@ about:
 
 ## About me
 
-I am a passionate, data-driven bioinformatician with expertise in next-generation sequencing genomic data, data visualizations, and AI/ML techniques. Skilled in clinical trial data analysis, bioinformatics tool development, and cross-functional team collaboration. Proficient in leading teams, developing backend infrastructure, and delivering actionable insights through advanced data analysis and visualization techniques.
+Hi, I'm Sadie (Sarah) Rose Wisotsky, a passionate, data-driven bioinformatician with expertise in next-generation sequencing genomic data, data visualizations, and AI/ML techniques. Skilled in clinical trial data analysis, bioinformatics tool development, and cross-functional team collaboration. Proficient in leading teams, developing backend infrastructure, and delivering actionable insights through advanced data analysis and visualization techniques. In my free time I play roller derby, Dungeons and Dragons,
+
+I've worked on clinical trials data at phase I, II, III and pre-clinical. I've touched oncological, virlogical 
 
 Here you'll find examples of projects I've done for work, past workshops, and for fun. 

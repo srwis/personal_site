@@ -1,0 +1,14 @@
+---
+title: "Hyphy tutorials"
+author: "Sadie Wisotsky"
+date: "2026-02-20"
+categories: [communication, tutorials]
+---
+
+As part of my time as a postdoc at IGEM in Temple University, I recorded a series of youtube video for the [HyPhy](https://hyphy.org/) software package. 
+
+This video describe how to use BUSTED[S], a model I developed in graduate school while at NCSU. The paper for which can be read [here](https://academic.oup.com/mbe/article/37/8/2430/5739973?login=false).
+
+{{< video https://www.youtube.com/watch?v=FRcJjYIcnY8 >}}
+
+The rest of the tutorial videos can be found on the [HyPhy Youtube](https://www.youtube.com/@hyphyvision7202). 

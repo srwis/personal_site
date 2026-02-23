@@ -2,16 +2,18 @@ project:
   type: website
 
 website:
-  description: "A blog built with Quarto"
+  description: "Babbling about Bioinformatics"
   site-url: https://your-website-url.example.com # you must change this appropriately for RSS feeds to work properly
-  title: "personal_site"
+  title: "Sadie Wisotsky: Bioinfomatician"
   navbar:
     right:
       - about.qmd
+      - icon: linkedin
+        text: LinkedIn
+        href: https://www.linkedin.com/in/sadie-wisotsky/
       - icon: github
-        href: https://github.com/
-      - icon: twitter
-        href: https://twitter.com
+        text: Github
+        href: https://github.com/srwis
 format:
   html:
     theme:

@@ -34,24 +34,26 @@
   <media:content url="https://your-website-url.example.com/posts/post-with-code/image.jpg" medium="image" type="image/jpeg"/>
 </item>
 <item>
-  <title>Welcome To My Blog</title>
-  <dc:creator>Tristan O&#39;Malley</dc:creator>
-  <link>https://your-website-url.example.com/posts/welcome/</link>
+  <title>Hyphy tutorials</title>
+  <dc:creator>Sadie Wisotsky</dc:creator>
+  <link>https://your-website-url.example.com/posts/HyPhy-videos/</link>
   <description><![CDATA[ 
 
 
 
 
 
-<p>This is the first post in a Quarto blog. Welcome!</p>
-<p><img src="https://your-website-url.example.com/posts/welcome/thumbnail.jpg" class="img-fluid"></p>
-<p>Since this post doesn’t specify an explicit <code>image</code>, the first image in the post will be used in the listing page of posts.</p>
+<p>As part of my time as a postdoc at IGEM in Temple University, I recorded a series of youtube video for the <a href="https://hyphy.org/">HyPhy</a> software package.</p>
+<p>This video describe how to use BUSTED[S], a model I developed in graduate school while at NCSU. The paper for which can be read <a href="https://academic.oup.com/mbe/article/37/8/2430/5739973?login=false">here</a>.</p>
+<div class="quarto-video ratio ratio-16x9"><iframe data-external="1" src="https://www.youtube.com/embed/FRcJjYIcnY8" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+<p>The rest of the tutorial videos can be found on the <a href="https://www.youtube.com/@hyphyvision7202">HyPhy Youtube</a>.</p>
 
 
 
  ]]></description>
-  <category>news</category>
-  <guid>https://your-website-url.example.com/posts/welcome/</guid>
+  <category>communication</category>
+  <category>tutorials</category>
+  <guid>https://your-website-url.example.com/posts/HyPhy-videos/</guid>
   <pubDate>Fri, 20 Feb 2026 05:00:00 GMT</pubDate>
 </item>
 </channel>
