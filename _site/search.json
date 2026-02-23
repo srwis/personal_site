@@ -1,12 +1,5 @@
 [
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "personal_site",
-    "section": "",
-    "text": "Post With Code\n\n\n\nnews\n\ncode\n\nanalysis\n\n\n\n\n\n\n\n\n\nFeb 23, 2026\n\n\nHarlow Malloc\n\n\n\n\n\n\n\n\n\n\n\n\nHyphy tutorials\n\n\n\ncommunication\n\ntutorials\n\n\n\n\n\n\n\n\n\nFeb 20, 2026\n\n\nSadie Wisotsky\n\n\n\n\n\nNo matching items"
-  },
-  {
     "objectID": "posts/post-with-code/index.html",
     "href": "posts/post-with-code/index.html",
     "title": "Post With Code",
@@ -14,25 +7,25 @@
     "text": "This is a post with executable code."
   },
   {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Sadie Wisotsky",
+    "section": "",
+    "text": "Publications\n\n\n\nresearch\n\npublications\n\nbioinformatics\n\n\n\n\n\n\n\n\n\nFeb 23, 2026\n\n\nSadie Wisotsky\n\n\n\n\n\n\n\n\n\n\n\n\nHyphy tutorials\n\n\n\ncommunication\n\ntutorials\n\n\n\n\n\n\n\n\n\nFeb 20, 2026\n\n\nSadie Wisotsky\n\n\n\n\n\nNo matching items"
+  },
+  {
     "objectID": "about.html",
     "href": "about.html",
     "title": "About",
     "section": "",
-    "text": "I am a passionate, data-driven bioinformatician with expertise in next-generation sequencing genomic data, data visualizations, and AI/ML techniques. Skilled in clinical trial data analysis, bioinformatics tool development, and cross-functional team collaboration. Proficient in leading teams, developing backend infrastructure, and delivering actionable insights through advanced data analysis and visualization techniques.\nHere you’ll find examples of projects I’ve done for work, past workshops, and for fun."
+    "text": "Hi, I’m Sadie (Sarah) Rose Wisotsky, a passionate, data-driven bioinformatician with expertise in next-generation sequencing genomic data, data visualizations, and AI/ML techniques. Skilled in clinical trial data analysis, bioinformatics tool development, and cross-functional team collaboration. Proficient in leading teams, developing backend infrastructure, and delivering actionable insights through advanced data analysis and visualization techniques. In my free time I play roller derby, Dungeons and Dragons,\nI’ve worked on clinical trials data at phase I, II, III and pre-clinical. I’ve touched oncological, virlogical\nHere you’ll find examples of projects I’ve done for work, past workshops, and for fun."
   },
   {
     "objectID": "about.html#about-me",
     "href": "about.html#about-me",
     "title": "About",
     "section": "",
-    "text": "I am a passionate, data-driven bioinformatician with expertise in next-generation sequencing genomic data, data visualizations, and AI/ML techniques. Skilled in clinical trial data analysis, bioinformatics tool development, and cross-functional team collaboration. Proficient in leading teams, developing backend infrastructure, and delivering actionable insights through advanced data analysis and visualization techniques.\nHere you’ll find examples of projects I’ve done for work, past workshops, and for fun."
-  },
-  {
-    "objectID": "posts/welcome/index.html",
-    "href": "posts/welcome/index.html",
-    "title": "Hyphy tutorials",
-    "section": "",
-    "text": "As part of my time as a postdoc at IGEM in Temple University, I recorded a series of youtube video for the HyPhy software package.\nThis video describe how to use BUSTED[S], a model I developed in graduate school while at NCSU. The paper for which can be read here."
+    "text": "Hi, I’m Sadie (Sarah) Rose Wisotsky, a passionate, data-driven bioinformatician with expertise in next-generation sequencing genomic data, data visualizations, and AI/ML techniques. Skilled in clinical trial data analysis, bioinformatics tool development, and cross-functional team collaboration. Proficient in leading teams, developing backend infrastructure, and delivering actionable insights through advanced data analysis and visualization techniques. In my free time I play roller derby, Dungeons and Dragons,\nI’ve worked on clinical trials data at phase I, II, III and pre-clinical. I’ve touched oncological, virlogical\nHere you’ll find examples of projects I’ve done for work, past workshops, and for fun."
   },
   {
     "objectID": "posts/HyPhy-videos/index.html",
@@ -40,5 +33,26 @@
     "title": "Hyphy tutorials",
     "section": "",
     "text": "As part of my time as a postdoc at IGEM in Temple University, I recorded a series of youtube video for the HyPhy software package.\nThis video describe how to use BUSTED[S], a model I developed in graduate school while at NCSU. The paper for which can be read here.\n\nThe rest of the tutorial videos can be found on the HyPhy Youtube."
+  },
+  {
+    "objectID": "posts/papers/index.html",
+    "href": "posts/papers/index.html",
+    "title": "Publications",
+    "section": "",
+    "text": "🟢 PLoS ONE\nLucaci, A. G., Wisotsky, S. R., et al. (2021).\nExtra base hits: Widespread empirical support for instantaneous multiple-nucleotide changes.\nhttps://doi.org/10.1371/journal.pone.0248337\n\n\n\nAbstract\n\nThis study provides empirical evidence supporting the occurrence of instantaneous multiple-nucleotide substitutions across diverse datasets. The findings challenge assumptions of single-nucleotide substitution models and highlight implications for evolutionary inference.\n\n\n\n\n\n\n🔵 Molecular Biology and Evolution\nWisotsky, S. R., Kosakovsky Pond, S. L., Shank, S. D., & Muse, S. V. (2020).\nSynonymous site-to-site substitution rate variation dramatically inflates false positive rates of selection analyses: ignore at your own peril.\nhttps://doi.org/10.1093/molbev/msaa037\n\n\n\nAbstract\n\nThis paper demonstrates that ignoring synonymous rate variation can dramatically inflate false positive rates in selection analyses. The study emphasizes the importance of incorporating realistic rate heterogeneity into evolutionary models.\n\n\n\n🟢 PLoS ONE\nMannino, F., Wisotsky, S. R., Kosakovsky Pond, S. L., & Muse, S. V. (2020).\nEquiprobable discrete models of site-specific substitution rates underestimate the extent of rate variability.\nhttps://doi.org/10.1371/journal.pone.0229493\n\n\n\nAbstract\n\nThis work shows that commonly used discrete substitution models underestimate true rate variability across sites, potentially biasing evolutionary inference and model-based conclusions.\n\n\n\n🔵 Molecular Biology and Evolution\nKosakovsky Pond, S. L., Wisotsky, S. R., Escalante, A., et al. (2020).\nContrast-FEL: A test for differences in selective pressures at individual sites among clades.\nhttps://doi.org/10.1093/molbev/msaa263\n\n\n\nAbstract\n\nContrast-FEL introduces a statistical method to test for differences in selective pressures at individual sites across clades, enabling more refined evolutionary hypothesis testing.\n\n\n\n🔵 Molecular Biology and Evolution\nKosakovsky Pond, S. L., Poon, A. F. Y., Wisotsky, S. R., et al. (2020).\nHyPhy 2.5 - A Customizable Platform for Evolutionary Hypothesis Testing.\nhttps://doi.org/10.1093/molbev/msz197\n\n\n\nAbstract\n\nHyPhy 2.5 provides a flexible, extensible computational framework for evolutionary hypothesis testing using phylogenies, supporting a broad range of statistical methods in molecular evolution.\n\n\n\n🟣 bioRxiv (Preprint)\nCui, R., Tyers, A. M., Juzar Malubhoy, Z., Wisotsky, S. R., et al. (2020).\nGenomics of a killifish from the Seychelles islands supports transoceanic island colonization and reveals relaxed selection of developmental genes.\nhttps://doi.org/10.1101/2020.08.03.232421\n\n\n\nAbstract\n\nThis genomic study of a Seychelles killifish species provides evidence supporting transoceanic island colonization and identifies signatures of relaxed selection in developmental genes.\n\n\n\n\n\n\n🟡 Phytopathology\nParker, J. K., Wisotsky, S. R., et al. (2014).\nViability of ‘Candidatus Liberibacter asiaticus’ prolonged by addition of citrus juice to culture medium.\nhttps://doi.org/10.1094/PHYTO-10-13-0264-R\n\n\n\nAbstract\n\nThis study demonstrated that addition of citrus juice to culture media prolongs viability of ‘Candidatus Liberibacter asiaticus’, contributing to improved experimental approaches for studying this plant pathogen."
+  },
+  {
+    "objectID": "posts/papers/index.html#peer-reviewed-publications",
+    "href": "posts/papers/index.html#peer-reviewed-publications",
+    "title": "Publications",
+    "section": "",
+    "text": "🟢 PLoS ONE\nLucaci, A. G., Wisotsky, S. R., et al. (2021).\nExtra base hits: Widespread empirical support for instantaneous multiple-nucleotide changes.\nhttps://doi.org/10.1371/journal.pone.0248337\n\n\n\nAbstract\n\nThis study provides empirical evidence supporting the occurrence of instantaneous multiple-nucleotide substitutions across diverse datasets. The findings challenge assumptions of single-nucleotide substitution models and highlight implications for evolutionary inference.\n\n\n\n\n\n\n🔵 Molecular Biology and Evolution\nWisotsky, S. R., Kosakovsky Pond, S. L., Shank, S. D., & Muse, S. V. (2020).\nSynonymous site-to-site substitution rate variation dramatically inflates false positive rates of selection analyses: ignore at your own peril.\nhttps://doi.org/10.1093/molbev/msaa037\n\n\n\nAbstract\n\nThis paper demonstrates that ignoring synonymous rate variation can dramatically inflate false positive rates in selection analyses. The study emphasizes the importance of incorporating realistic rate heterogeneity into evolutionary models.\n\n\n\n🟢 PLoS ONE\nMannino, F., Wisotsky, S. R., Kosakovsky Pond, S. L., & Muse, S. V. (2020).\nEquiprobable discrete models of site-specific substitution rates underestimate the extent of rate variability.\nhttps://doi.org/10.1371/journal.pone.0229493\n\n\n\nAbstract\n\nThis work shows that commonly used discrete substitution models underestimate true rate variability across sites, potentially biasing evolutionary inference and model-based conclusions.\n\n\n\n🔵 Molecular Biology and Evolution\nKosakovsky Pond, S. L., Wisotsky, S. R., Escalante, A., et al. (2020).\nContrast-FEL: A test for differences in selective pressures at individual sites among clades.\nhttps://doi.org/10.1093/molbev/msaa263\n\n\n\nAbstract\n\nContrast-FEL introduces a statistical method to test for differences in selective pressures at individual sites across clades, enabling more refined evolutionary hypothesis testing.\n\n\n\n🔵 Molecular Biology and Evolution\nKosakovsky Pond, S. L., Poon, A. F. Y., Wisotsky, S. R., et al. (2020).\nHyPhy 2.5 - A Customizable Platform for Evolutionary Hypothesis Testing.\nhttps://doi.org/10.1093/molbev/msz197\n\n\n\nAbstract\n\nHyPhy 2.5 provides a flexible, extensible computational framework for evolutionary hypothesis testing using phylogenies, supporting a broad range of statistical methods in molecular evolution.\n\n\n\n🟣 bioRxiv (Preprint)\nCui, R., Tyers, A. M., Juzar Malubhoy, Z., Wisotsky, S. R., et al. (2020).\nGenomics of a killifish from the Seychelles islands supports transoceanic island colonization and reveals relaxed selection of developmental genes.\nhttps://doi.org/10.1101/2020.08.03.232421\n\n\n\nAbstract\n\nThis genomic study of a Seychelles killifish species provides evidence supporting transoceanic island colonization and identifies signatures of relaxed selection in developmental genes.\n\n\n\n\n\n\n🟡 Phytopathology\nParker, J. K., Wisotsky, S. R., et al. (2014).\nViability of ‘Candidatus Liberibacter asiaticus’ prolonged by addition of citrus juice to culture medium.\nhttps://doi.org/10.1094/PHYTO-10-13-0264-R\n\n\n\nAbstract\n\nThis study demonstrated that addition of citrus juice to culture media prolongs viability of ‘Candidatus Liberibacter asiaticus’, contributing to improved experimental approaches for studying this plant pathogen."
+  },
+  {
+    "objectID": "posts/papers/index.html#research-focus-areas",
+    "href": "posts/papers/index.html#research-focus-areas",
+    "title": "Publications",
+    "section": "Research Focus Areas",
+    "text": "Research Focus Areas\n\nEvolutionary model development\n\nStatistical inference of natural selection\n\nSynonymous rate variation\n\nHyPhy-based evolutionary hypothesis testing\n\nGenomic analysis and bioinformatics tool development\n\nPlant pathogen biology\n\n\nClick “Abstract” under each publication to expand details."
   }
 ]

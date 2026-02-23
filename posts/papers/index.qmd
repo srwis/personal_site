@@ -1,0 +1,114 @@
+---
+title: "Publications"
+author: "Sadie Wisotsky"
+date: today
+categories: [research, publications, bioinformatics]
+format:
+  html:
+    toc: false
+---
+
+## Peer-Reviewed Publications
+
+### 2021
+
+- 🟢 **PLoS ONE**  
+  **Lucaci, A. G., Wisotsky, S. R., et al. (2021).**  
+  *Extra base hits: Widespread empirical support for instantaneous multiple-nucleotide changes.*  
+  https://doi.org/10.1371/journal.pone.0248337  
+
+<details>
+<summary><strong>Abstract</strong></summary>
+This study provides empirical evidence supporting the occurrence of instantaneous multiple-nucleotide substitutions across diverse datasets. The findings challenge assumptions of single-nucleotide substitution models and highlight implications for evolutionary inference.
+</details>
+
+---
+
+### 2020
+
+- 🔵 **Molecular Biology and Evolution**  
+  **Wisotsky, S. R., Kosakovsky Pond, S. L., Shank, S. D., & Muse, S. V. (2020).**  
+  *Synonymous site-to-site substitution rate variation dramatically inflates false positive rates of selection analyses: ignore at your own peril.*  
+  https://doi.org/10.1093/molbev/msaa037  
+
+<details>
+<summary><strong>Abstract</strong></summary>
+This paper demonstrates that ignoring synonymous rate variation can dramatically inflate false positive rates in selection analyses. The study emphasizes the importance of incorporating realistic rate heterogeneity into evolutionary models.
+</details>
+
+---
+
+- 🟢 **PLoS ONE**  
+  **Mannino, F., Wisotsky, S. R., Kosakovsky Pond, S. L., & Muse, S. V. (2020).**  
+  *Equiprobable discrete models of site-specific substitution rates underestimate the extent of rate variability.*  
+  https://doi.org/10.1371/journal.pone.0229493  
+
+<details>
+<summary><strong>Abstract</strong></summary>
+This work shows that commonly used discrete substitution models underestimate true rate variability across sites, potentially biasing evolutionary inference and model-based conclusions.
+</details>
+
+---
+
+- 🔵 **Molecular Biology and Evolution**  
+  **Kosakovsky Pond, S. L., Wisotsky, S. R., Escalante, A., et al. (2020).**  
+  *Contrast-FEL: A test for differences in selective pressures at individual sites among clades.*  
+  https://doi.org/10.1093/molbev/msaa263  
+
+<details>
+<summary><strong>Abstract</strong></summary>
+Contrast-FEL introduces a statistical method to test for differences in selective pressures at individual sites across clades, enabling more refined evolutionary hypothesis testing.
+</details>
+
+---
+
+- 🔵 **Molecular Biology and Evolution**  
+  **Kosakovsky Pond, S. L., Poon, A. F. Y., Wisotsky, S. R., et al. (2020).**  
+  *HyPhy 2.5 - A Customizable Platform for Evolutionary Hypothesis Testing.*  
+  https://doi.org/10.1093/molbev/msz197  
+
+<details>
+<summary><strong>Abstract</strong></summary>
+HyPhy 2.5 provides a flexible, extensible computational framework for evolutionary hypothesis testing using phylogenies, supporting a broad range of statistical methods in molecular evolution.
+</details>
+
+---
+
+- 🟣 **bioRxiv (Preprint)**  
+  **Cui, R., Tyers, A. M., Juzar Malubhoy, Z., Wisotsky, S. R., et al. (2020).**  
+  *Genomics of a killifish from the Seychelles islands supports transoceanic island colonization and reveals relaxed selection of developmental genes.*  
+  https://doi.org/10.1101/2020.08.03.232421  
+
+<details>
+<summary><strong>Abstract</strong></summary>
+This genomic study of a Seychelles killifish species provides evidence supporting transoceanic island colonization and identifies signatures of relaxed selection in developmental genes.
+</details>
+
+---
+
+### 2014
+
+- 🟡 **Phytopathology**  
+  **Parker, J. K., Wisotsky, S. R., et al. (2014).**  
+  *Viability of ‘Candidatus Liberibacter asiaticus’ prolonged by addition of citrus juice to culture medium.*  
+  https://doi.org/10.1094/PHYTO-10-13-0264-R  
+
+<details>
+<summary><strong>Abstract</strong></summary>
+This study demonstrated that addition of citrus juice to culture media prolongs viability of ‘Candidatus Liberibacter asiaticus’, contributing to improved experimental approaches for studying this plant pathogen.
+</details>
+
+---
+
+## Research Focus Areas
+
+- Evolutionary model development  
+- Statistical inference of natural selection  
+- Synonymous rate variation  
+- HyPhy-based evolutionary hypothesis testing  
+- Genomic analysis and bioinformatics tool development  
+- Plant pathogen biology  
+
+---
+
+*Click “Abstract” under each publication to expand details.*
