@@ -8,18 +8,67 @@ format:
     toc: false
 ---
 
-## Peer-Reviewed Publications
+## Peer‑Reviewed Publications
+
+### 2026
+- 🧪 **Cancer Immunology Research (AACR)** 
+  **Reuschel, E. L., Sylvester, A., Marcus, S., Wisotsky, S., Dolgoter, A., Reed, K. S., Tan, G. S., Skolnik, J. M., Gillespie, E. (2024).** 
+  *Treatment of Recurrent Respiratory Papillomatosis with DNA immunotherapy INO-3107 induces activation and enrichment of pro-inflammatory CD4+ T cell responses in blood and airways of patients with clinical response*
+  https://doi.org/10.1158/2326-6074.IO2026-A060
+
+  <details>
+  <summary><strong>Abstract</strong></summary>
+  Recurrent respiratory papillomatosis (RRP) is a chronic, debilitating disease of the airway primarily caused by infection with human papillomavirus (HPV) types 6 and/or 11 and characterized by recurrent, benign tumor growth with potential for malignant transformation. Current standard of care consists of repeated surgical removal of papillomas, which can lead to lasting airway damage and impaired vocal function. Thus, a non-surgical approach to treat RRP is paramount. Previously, we described CD8+ T cell responses associated with clinical response to INO-3107, a DNA immunotherapy designed to generate T cells capable of targeting HPV-infected cells, in adult RRP patients during a Phase 1/2 trial (NCT04398433). Here, we describe CD4+ T cell responses in these patients.
+  </details>
+
+### 2025
+
+- 🧪 **Nature Communications**  
+  **Morrow, M. P., Gillespie, E., Sylvester, A., Amin, M. R., Belafsky, P. C., Best, S. R., ... Wisotsky, S. R., Marcus, S., Reuschel, E. L., Reed, K. S., Weiner, D. B., Dallas, M., Skolnik, J. M. (2025).**  
+  *DNA immunotherapy for recurrent respiratory papillomatosis (RRP): Phase 1/2 study assessing efficacy, safety, and immunogenicity of INO‑3107.*  
+  https://doi.org/10.1038/s41467-025-56729-6  
+
+<details>
+<summary><strong>Abstract</strong></summary>  
+Recurrent respiratory papillomatosis (RRP) is a chronic airway disease caused by HPV. In this Phase 1/2 study, INO‑3107, a DNA immunotherapy targeting HPV‑6/‑11, was well‑tolerated and showed clinical benefit, reducing surgical interventions in participants and generating antigen‑specific T‑cell responses that correlated with clinical outcomes.
+</details>
+
+---
+
+### 2024
+
+- 🧪 **Cancer Immunology Research (AACR)**  
+  **Gillespie, E., Sylvester, A., Marcus, S., Reed, K., Reuschel, E. L., Wisotsky, S., et al (2024).**  
+  *Reduction in Surgical Interventions for the Treatment of Recurrent Respiratory Papillomatosis by INO-3107 is Associated with Enriched Macrophage, Dendritic cell and T cell Signatures in Patient Airways*  
+  https://aacrjournals.org/cancerimmunolres/article/12/10_Supplement/A005/748902  
+
+<details>
+<summary><strong>Abstract</strong></summary>  
+Recurrent respiratory papillomatosis (RRP) is a debilitating chronic disease of the airway caused by Human Papillomavirus (HPV) characterized by recurrent benign tumor growth with the potential for malignant transformation. The current standard of care requires frequent surgeries, the sequalae of which have long-standing negative impacts on airway and vocal function. Treatments that avoid surgery targeted against HPV6 and/or HPV11 (known etiological agents of RRP) are thus an area of need. Here we describe the results of a Phase 1/2 trial of INO-3107, a DNA therapy designed to elicit T-cell responses against HPV-6 and HPV-11, in adults with RRP (NCT04398433). Methods: Peripheral blood mononuclear cells (PBMCs) were assessed by IFNg ELISpot and TCRb sequencing of complementarity determining region 3 (CDR3). Formalin fixed paraffin embedded papilloma tissue obtained prior to INO-3107 treatment as well as at the end of the 52-week study was assessed by RNA sequencing. Data were analyzed using Ingenuity Pathway Analysis (IPA) and R. Overall clinical response (OCR) was defined as a reduction in surgical interventions recorded on study as compared to the year prior to study. Results: The OCR of the trial was 81.3%. Analysis of PBMCs longitudinally across the study via ELISpot confirmed induction of T cell activity specific to HPV-6 as well as HPV-11. TCRb sequencing of CDR3 regions indicated significant T cell clonal expansion in all patients. IPA based assessments indicated a number of significantly enriched immune pathways in airway tissue at the end of study relative to pre-treatment, spanning both innate and adaptive immune responses. For the former, enriched pathways were inclusive of recruitment (z=2.3, p=1.00e-10), migration (z=2.4, p=6.50e-15), quantity (z=2.3, p=1.37e-10), and response (z=3.0, p=5.85e-07) of antigen presenting cells, indicative of an innate inflammatory response. Upregulated genes included macrophage and dendritic cell associated transcripts such as IFNg, CIITA, XCR1, CD14 and others. For the latter, homing (z=2.4 , p=7.77e-06), quantity (z=2.7, p=6.27e-21), signaling (z=3.9, p=3.16e-12), and cytotoxicity (z=2.6, p=1.18e-06), of T cells were all significantly enriched, indicating a robust influx of activated T cells into airway tissue. T cell associated transcripts included CD3D/E/G, PRF1, CD8A, GZMA, and others. Conclusions: INO-3107 provides clinical benefit to adults with RRP, is well tolerated, and generates an antigen-specific immune response against HPV types 6 and 11. In total, 100% of patients on trial demonstrated T cell activity in blood after administration of IN0-3107, inclusive of antigen specific cytokine production and significantly expanded T cell populations. Moreover, treatment induced an inflammatory response in patient airway tissues, inclusive of signatures of macrophages, dendritic cells and T cells. Importantly, this activity was associated with overall clinical response
+</details>
+
+---
 
 ### 2021
 
 - 🟢 **PLoS ONE**  
   **Lucaci, A. G., Wisotsky, S. R., et al. (2021).**  
-  *Extra base hits: Widespread empirical support for instantaneous multiple-nucleotide changes.*  
+  *Extra base hits: Widespread empirical support for instantaneous multiple‑nucleotide changes.*  
   https://doi.org/10.1371/journal.pone.0248337  
 
 <details>
-<summary><strong>Abstract</strong></summary>
-This study provides empirical evidence supporting the occurrence of instantaneous multiple-nucleotide substitutions across diverse datasets. The findings challenge assumptions of single-nucleotide substitution models and highlight implications for evolutionary inference.
+<summary><strong>Abstract</strong></summary>  
+This study provides empirical evidence for instantaneous multiple‑nucleotide substitutions across genomic datasets, challenging assumptions of strictly single‑nucleotide change models in evolutionary analyses.
+</details>
+
+- 🟣 **Molecular Ecology**  
+  **Cui, R., Tyers, A. M., Juzar Malubhoy, Z., Wisotsky, S. R., et al. (2021).**  
+  *Ancestral transoceanic colonization and recent population reduction in a nonannual killifish from the Seychelles archipelago.*  
+  https://doi.org/10.1111/mec.15982  
+
+<details>
+<summary><strong>Abstract</strong></summary>  
+Phylogenomic and species distribution evidence supports transoceanic dispersal events and recent population decline in Seychelles killifish, with genomic signals of relaxed developmental gene selection.
 </details>
 
 ---
@@ -28,60 +77,32 @@ This study provides empirical evidence supporting the occurrence of instantaneou
 
 - 🔵 **Molecular Biology and Evolution**  
   **Wisotsky, S. R., Kosakovsky Pond, S. L., Shank, S. D., & Muse, S. V. (2020).**  
-  *Synonymous site-to-site substitution rate variation dramatically inflates false positive rates of selection analyses: ignore at your own peril.*  
+  *Synonymous site‑to‑site substitution rate variation dramatically inflates false positive rates of selection analyses.*  
   https://doi.org/10.1093/molbev/msaa037  
 
 <details>
-<summary><strong>Abstract</strong></summary>
-This paper demonstrates that ignoring synonymous rate variation can dramatically inflate false positive rates in selection analyses. The study emphasizes the importance of incorporating realistic rate heterogeneity into evolutionary models.
+<summary><strong>Abstract</strong></summary>  
+Ignoring synonymous rate variation across sites can inflate false positive detection of natural selection in molecular data. Incorporating this variation improves evolutionary inference reliability.
 </details>
-
----
-
-- 🟢 **PLoS ONE**  
-  **Mannino, F., Wisotsky, S. R., Kosakovsky Pond, S. L., & Muse, S. V. (2020).**  
-  *Equiprobable discrete models of site-specific substitution rates underestimate the extent of rate variability.*  
-  https://doi.org/10.1371/journal.pone.0229493  
-
-<details>
-<summary><strong>Abstract</strong></summary>
-This work shows that commonly used discrete substitution models underestimate true rate variability across sites, potentially biasing evolutionary inference and model-based conclusions.
-</details>
-
----
 
 - 🔵 **Molecular Biology and Evolution**  
   **Kosakovsky Pond, S. L., Wisotsky, S. R., Escalante, A., et al. (2020).**  
-  *Contrast-FEL: A test for differences in selective pressures at individual sites among clades.*  
+  *Contrast‑FEL: A test for differences in selective pressures at individual sites among clades.*  
   https://doi.org/10.1093/molbev/msaa263  
 
 <details>
-<summary><strong>Abstract</strong></summary>
-Contrast-FEL introduces a statistical method to test for differences in selective pressures at individual sites across clades, enabling more refined evolutionary hypothesis testing.
+<summary><strong>Abstract</strong></summary>  
+Contrast‑FEL provides a method for identifying differences in selective pressures at specific sequence sites between phylogenetic clades.
 </details>
-
----
 
 - 🔵 **Molecular Biology and Evolution**  
   **Kosakovsky Pond, S. L., Poon, A. F. Y., Wisotsky, S. R., et al. (2020).**  
-  *HyPhy 2.5 - A Customizable Platform for Evolutionary Hypothesis Testing.*  
+  *HyPhy 2.5 ‑ A Customizable Platform for Evolutionary Hypothesis Testing.*  
   https://doi.org/10.1093/molbev/msz197  
 
 <details>
-<summary><strong>Abstract</strong></summary>
-HyPhy 2.5 provides a flexible, extensible computational framework for evolutionary hypothesis testing using phylogenies, supporting a broad range of statistical methods in molecular evolution.
-</details>
-
----
-
-- 🟣 **bioRxiv (Preprint)**  
-  **Cui, R., Tyers, A. M., Juzar Malubhoy, Z., Wisotsky, S. R., et al. (2020).**  
-  *Genomics of a killifish from the Seychelles islands supports transoceanic island colonization and reveals relaxed selection of developmental genes.*  
-  https://doi.org/10.1101/2020.08.03.232421  
-
-<details>
-<summary><strong>Abstract</strong></summary>
-This genomic study of a Seychelles killifish species provides evidence supporting transoceanic island colonization and identifies signatures of relaxed selection in developmental genes.
+<summary><strong>Abstract</strong></summary>  
+HyPhy 2.5 is a phylogenetic software platform enabling flexible hypothesis testing via molecular evolutionary models.
 </details>
 
 ---
@@ -91,11 +112,23 @@ This genomic study of a Seychelles killifish species provides evidence supportin
 - 🟡 **Phytopathology**  
   **Parker, J. K., Wisotsky, S. R., et al. (2014).**  
   *Viability of ‘Candidatus Liberibacter asiaticus’ prolonged by addition of citrus juice to culture medium.*  
-  https://doi.org/10.1094/PHYTO-10-13-0264-R  
+  https://doi.org/10.1094/PHYTO‑10‑13‑0264‑R  
+
+<details>
+<summary><strong>Abstract</strong></summary>  
+Addition of citrus juice extended viability of the plant pathogen *Candidatus Liberibacter asiaticus*, improving culture conditions for experimental study.
+</details>
+
+---
+
+## Theses & Dissertations
+
+- 🎓 **Wisotsky, S. R. (2019).** *Statistical Methods and Genomic Data Analyses for Detecting Natural Selection.* Ph.D. Dissertation, North Carolina State University.  
+  https://www.proquest.com/openview/d6709c9e0ac6a25b4547fe1937e80fc5/1?pq‑origsite=gscholar&cbl=18750&diss=y  
 
 <details>
 <summary><strong>Abstract</strong></summary>
-This study demonstrated that addition of citrus juice to culture media prolongs viability of ‘Candidatus Liberibacter asiaticus’, contributing to improved experimental approaches for studying this plant pathogen.
+This dissertation develops statistical approaches for detecting natural selection in genomic datasets, focusing on model robustness and evolutionary inference techniques.
 </details>
 
 ---
@@ -104,11 +137,10 @@ This study demonstrated that addition of citrus juice to culture media prolongs 
 
 - Evolutionary model development  
 - Statistical inference of natural selection  
-- Synonymous rate variation  
-- HyPhy-based evolutionary hypothesis testing  
-- Genomic analysis and bioinformatics tool development  
-- Plant pathogen biology  
+- Synonymous rate variation and codon models  
+- Cancer immunology and epigenetic regulation  
+- Bioinformatics and clinical trial data analysis
 
 ---
 
-*Click “Abstract” under each publication to expand details.*
+*Click “Abstract” under each entry to expand details.*

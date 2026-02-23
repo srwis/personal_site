@@ -3,7 +3,7 @@ project:
 
 website:
   description: "Babbling about Bioinformatics"
-  site-url: https://your-website-url.example.com # you must change this appropriately for RSS feeds to work properly
+  site-url: srwis.github.io/personal_site # you must change this appropriately for RSS feeds to work properly
   title: "Sadie Wisotsky: Bioinfomatician"
   navbar:
     right:
