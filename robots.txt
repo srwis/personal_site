@@ -1,1 +1,1 @@
-Sitemap: srwis.github.io/sitemap.xml
+Sitemap: srwis.github.io/personal_site/sitemap.xml
