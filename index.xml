@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss  xmlns:atom="http://www.w3.org/2005/Atom" 
+      xmlns:media="http://search.yahoo.com/mrss/" 
+      xmlns:content="http://purl.org/rss/1.0/modules/content/" 
+      xmlns:dc="http://purl.org/dc/elements/1.1/" 
+      version="2.0">
+<channel>
+<title>Sadie Wisotsky: Bioinfomatician</title>
+<link>srwis.github.io/</link>
+<atom:link href="srwis.github.io/index.xml" rel="self" type="application/rss+xml"/>
+<description>Babbling about Bioinformatics</description>
+<generator>quarto-1.8.27</generator>
+<lastBuildDate>Mon, 23 Feb 2026 05:00:00 GMT</lastBuildDate>
+<item>
+  <title>Publications</title>
+  <dc:creator>Sadie Wisotsky</dc:creator>
+  <link>srwis.github.io/posts/papers/</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<section id="peer-reviewed-publications" class="level2">
+<h2 class="anchored" data-anchor-id="peer-reviewed-publications">Peer-Reviewed Publications</h2>
+<section id="section" class="level3">
+<h3 class="anchored" data-anchor-id="section">2021</h3>
+<ul>
+<li>🟢 <strong>PLoS ONE</strong><br>
+<strong>Lucaci, A. G., Wisotsky, S. R., et al.&nbsp;(2021).</strong><br>
+<em>Extra base hits: Widespread empirical support for instantaneous multiple-nucleotide changes.</em><br>
+https://doi.org/10.1371/journal.pone.0248337</li>
+</ul>
+<details>
+<summary>
+<strong>Abstract</strong>
+</summary>
+This study provides empirical evidence supporting the occurrence of instantaneous multiple-nucleotide substitutions across diverse datasets. The findings challenge assumptions of single-nucleotide substitution models and highlight implications for evolutionary inference.
+</details>
+<hr>
+</section>
+<section id="section-1" class="level3">
+<h3 class="anchored" data-anchor-id="section-1">2020</h3>
+<ul>
+<li>🔵 <strong>Molecular Biology and Evolution</strong><br>
+<strong>Wisotsky, S. R., Kosakovsky Pond, S. L., Shank, S. D., &amp; Muse, S. V. (2020).</strong><br>
+<em>Synonymous site-to-site substitution rate variation dramatically inflates false positive rates of selection analyses: ignore at your own peril.</em><br>
+https://doi.org/10.1093/molbev/msaa037</li>
+</ul>
+<details>
+<summary>
+<strong>Abstract</strong>
+</summary>
+This paper demonstrates that ignoring synonymous rate variation can dramatically inflate false positive rates in selection analyses. The study emphasizes the importance of incorporating realistic rate heterogeneity into evolutionary models.
+</details>
+<hr>
+<ul>
+<li>🟢 <strong>PLoS ONE</strong><br>
+<strong>Mannino, F., Wisotsky, S. R., Kosakovsky Pond, S. L., &amp; Muse, S. V. (2020).</strong><br>
+<em>Equiprobable discrete models of site-specific substitution rates underestimate the extent of rate variability.</em><br>
+https://doi.org/10.1371/journal.pone.0229493</li>
+</ul>
+<details>
+<summary>
+<strong>Abstract</strong>
+</summary>
+This work shows that commonly used discrete substitution models underestimate true rate variability across sites, potentially biasing evolutionary inference and model-based conclusions.
+</details>
+<hr>
+<ul>
+<li>🔵 <strong>Molecular Biology and Evolution</strong><br>
+<strong>Kosakovsky Pond, S. L., Wisotsky, S. R., Escalante, A., et al.&nbsp;(2020).</strong><br>
+<em>Contrast-FEL: A test for differences in selective pressures at individual sites among clades.</em><br>
+https://doi.org/10.1093/molbev/msaa263</li>
+</ul>
+<details>
+<summary>
+<strong>Abstract</strong>
+</summary>
+Contrast-FEL introduces a statistical method to test for differences in selective pressures at individual sites across clades, enabling more refined evolutionary hypothesis testing.
+</details>
+<hr>
+<ul>
+<li>🔵 <strong>Molecular Biology and Evolution</strong><br>
+<strong>Kosakovsky Pond, S. L., Poon, A. F. Y., Wisotsky, S. R., et al.&nbsp;(2020).</strong><br>
+<em>HyPhy 2.5 - A Customizable Platform for Evolutionary Hypothesis Testing.</em><br>
+https://doi.org/10.1093/molbev/msz197</li>
+</ul>
+<details>
+<summary>
+<strong>Abstract</strong>
+</summary>
+HyPhy 2.5 provides a flexible, extensible computational framework for evolutionary hypothesis testing using phylogenies, supporting a broad range of statistical methods in molecular evolution.
+</details>
+<hr>
+<ul>
+<li>🟣 <strong>bioRxiv (Preprint)</strong><br>
+<strong>Cui, R., Tyers, A. M., Juzar Malubhoy, Z., Wisotsky, S. R., et al.&nbsp;(2020).</strong><br>
+<em>Genomics of a killifish from the Seychelles islands supports transoceanic island colonization and reveals relaxed selection of developmental genes.</em><br>
+https://doi.org/10.1101/2020.08.03.232421</li>
+</ul>
+<details>
+<summary>
+<strong>Abstract</strong>
+</summary>
+This genomic study of a Seychelles killifish species provides evidence supporting transoceanic island colonization and identifies signatures of relaxed selection in developmental genes.
+</details>
+<hr>
+</section>
+<section id="section-2" class="level3">
+<h3 class="anchored" data-anchor-id="section-2">2014</h3>
+<ul>
+<li>🟡 <strong>Phytopathology</strong><br>
+<strong>Parker, J. K., Wisotsky, S. R., et al.&nbsp;(2014).</strong><br>
+<em>Viability of ‘Candidatus Liberibacter asiaticus’ prolonged by addition of citrus juice to culture medium.</em><br>
+https://doi.org/10.1094/PHYTO-10-13-0264-R</li>
+</ul>
+<details>
+<summary>
+<strong>Abstract</strong>
+</summary>
+This study demonstrated that addition of citrus juice to culture media prolongs viability of ‘Candidatus Liberibacter asiaticus’, contributing to improved experimental approaches for studying this plant pathogen.
+</details>
+<hr>
+</section>
+</section>
+<section id="research-focus-areas" class="level2">
+<h2 class="anchored" data-anchor-id="research-focus-areas">Research Focus Areas</h2>
+<ul>
+<li>Evolutionary model development<br>
+</li>
+<li>Statistical inference of natural selection<br>
+</li>
+<li>Synonymous rate variation<br>
+</li>
+<li>HyPhy-based evolutionary hypothesis testing<br>
+</li>
+<li>Genomic analysis and bioinformatics tool development<br>
+</li>
+<li>Plant pathogen biology</li>
+</ul>
+<hr>
+<p><em>Click “Abstract” under each publication to expand details.</em></p>
+
+
+</section>
+
+ ]]></description>
+  <category>research</category>
+  <category>publications</category>
+  <category>bioinformatics</category>
+  <guid>srwis.github.io/posts/papers/</guid>
+  <pubDate>Mon, 23 Feb 2026 05:00:00 GMT</pubDate>
+</item>
+<item>
+  <title>Hyphy tutorials</title>
+  <dc:creator>Sadie Wisotsky</dc:creator>
+  <link>srwis.github.io/posts/HyPhy-videos/</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<p>As part of my time as a postdoc at IGEM in Temple University, I recorded a series of youtube video for the <a href="https://hyphy.org/">HyPhy</a> software package.</p>
+<p>This video describe how to use BUSTED[S], a model I developed in graduate school while at NCSU. The paper for which can be read <a href="https://academic.oup.com/mbe/article/37/8/2430/5739973?login=false">here</a>.</p>
+<div class="quarto-video ratio ratio-16x9"><iframe data-external="1" src="https://www.youtube.com/embed/FRcJjYIcnY8" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
+<p>The rest of the tutorial videos can be found on the <a href="https://www.youtube.com/@hyphyvision7202">HyPhy Youtube</a>.</p>
+
+
+
+ ]]></description>
+  <category>communication</category>
+  <category>tutorials</category>
+  <guid>srwis.github.io/posts/HyPhy-videos/</guid>
+  <pubDate>Fri, 20 Feb 2026 05:00:00 GMT</pubDate>
+</item>
+</channel>
+</rss>
