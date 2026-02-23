@@ -1,0 +1,37 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "personal_site",
+    "section": "",
+    "text": "Post With Code\n\n\n\nnews\n\ncode\n\nanalysis\n\n\n\n\n\n\n\n\n\nFeb 23, 2026\n\n\nHarlow Malloc\n\n\n\n\n\n\n\n\n\n\n\n\nWelcome To My Blog\n\n\n\nnews\n\n\n\n\n\n\n\n\n\nFeb 20, 2026\n\n\nTristan O’Malley\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "posts/post-with-code/index.html",
+    "href": "posts/post-with-code/index.html",
+    "title": "Post With Code",
+    "section": "",
+    "text": "This is a post with executable code."
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "I am a passionate, data-driven bioinformatician with expertise in next-generation sequencing genomic data, data visualizations, and AI/ML techniques. Skilled in clinical trial data analysis, bioinformatics tool development, and cross-functional team collaboration. Proficient in leading teams, developing backend infrastructure, and delivering actionable insights through advanced data analysis and visualization techniques.\nHere you’ll find examples of projects I’ve done for work, past workshops, and for fun."
+  },
+  {
+    "objectID": "about.html#about-me",
+    "href": "about.html#about-me",
+    "title": "About",
+    "section": "",
+    "text": "I am a passionate, data-driven bioinformatician with expertise in next-generation sequencing genomic data, data visualizations, and AI/ML techniques. Skilled in clinical trial data analysis, bioinformatics tool development, and cross-functional team collaboration. Proficient in leading teams, developing backend infrastructure, and delivering actionable insights through advanced data analysis and visualization techniques.\nHere you’ll find examples of projects I’ve done for work, past workshops, and for fun."
+  },
+  {
+    "objectID": "posts/welcome/index.html",
+    "href": "posts/welcome/index.html",
+    "title": "Welcome To My Blog",
+    "section": "",
+    "text": "This is the first post in a Quarto blog. Welcome!\n\nSince this post doesn’t specify an explicit image, the first image in the post will be used in the listing page of posts."
+  }
+]
