@@ -1,0 +1,20 @@
+---
+title: "About"
+image: profile.jpg
+about:
+  template: jolla
+  links:
+    - icon: linkedin
+      text: LinkedIn
+      href: https://www.linkedin.com/in/sadie-wisotsky/
+    - icon: github
+      text: Github
+      href: https://github.com/srwis
+
+---
+
+## About me
+
+I am a passionate, data-driven bioinformatician with expertise in next-generation sequencing genomic data, data visualizations, and AI/ML techniques. Skilled in clinical trial data analysis, bioinformatics tool development, and cross-functional team collaboration. Proficient in leading teams, developing backend infrastructure, and delivering actionable insights through advanced data analysis and visualization techniques.
+
+Here you'll find examples of projects I've done for work, past workshops, and for fun. 
