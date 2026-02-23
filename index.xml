@@ -6,15 +6,15 @@
       version="2.0">
 <channel>
 <title>Sadie Wisotsky: Bioinfomatician</title>
-<link>srwis.github.io/personal_site/</link>
-<atom:link href="srwis.github.io/personal_site/index.xml" rel="self" type="application/rss+xml"/>
+<link>https://srwis.github.io/personal_site/</link>
+<atom:link href="https://srwis.github.io/personal_site/index.xml" rel="self" type="application/rss+xml"/>
 <description>Babbling about Bioinformatics</description>
 <generator>quarto-1.8.27</generator>
 <lastBuildDate>Mon, 23 Feb 2026 05:00:00 GMT</lastBuildDate>
 <item>
   <title>Publications</title>
   <dc:creator>Sadie Wisotsky</dc:creator>
-  <link>srwis.github.io/personal_site/posts/papers/</link>
+  <link>https://srwis.github.io/personal_site/posts/papers/</link>
   <description><![CDATA[ 
 
 
@@ -149,13 +149,13 @@ This study demonstrated that addition of citrus juice to culture media prolongs 
   <category>research</category>
   <category>publications</category>
   <category>bioinformatics</category>
-  <guid>srwis.github.io/personal_site/posts/papers/</guid>
+  <guid>https://srwis.github.io/personal_site/posts/papers/</guid>
   <pubDate>Mon, 23 Feb 2026 05:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Hyphy tutorials</title>
   <dc:creator>Sadie Wisotsky</dc:creator>
-  <link>srwis.github.io/personal_site/posts/HyPhy-videos/</link>
+  <link>https://srwis.github.io/personal_site/posts/HyPhy-videos/</link>
   <description><![CDATA[ 
 
 
@@ -172,7 +172,7 @@ This study demonstrated that addition of citrus juice to culture media prolongs 
  ]]></description>
   <category>communication</category>
   <category>tutorials</category>
-  <guid>srwis.github.io/personal_site/posts/HyPhy-videos/</guid>
+  <guid>https://srwis.github.io/personal_site/posts/HyPhy-videos/</guid>
   <pubDate>Fri, 20 Feb 2026 05:00:00 GMT</pubDate>
 </item>
 </channel>
