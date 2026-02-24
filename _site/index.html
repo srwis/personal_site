@@ -131,7 +131,7 @@ window.Quarto = {
 </script>
 
 <link rel="stylesheet" href="styles.css">
-<link rel="alternate" type="application/rss+xml" title="Sadie Wisotsky: Bioinfomatician" href="index.xml" data-external="1"></head>
+</head>
 
 <body class="nav-fixed quarto-light">
 
@@ -193,7 +193,7 @@ window.Quarto = {
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(2)</span></div><div class="category" data-category="YmlvaW5mb3JtYXRpY3M=">bioinformatics <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Y29tbXVuaWNhdGlvbg==">communication <span class="quarto-category-count">(1)</span></div><div class="category" data-category="cHVibGljYXRpb25z">publications <span class="quarto-category-count">(1)</span></div><div class="category" data-category="cmVzZWFyY2g=">research <span class="quarto-category-count">(1)</span></div><div class="category" data-category="dHV0b3JpYWxz">tutorials <span class="quarto-category-count">(1)</span></div></div></div>
+    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(3)</span></div><div class="category" data-category="YmlvaW5mb3JtYXRpY3M=">bioinformatics <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Y29tbXVuaWNhdGlvbg==">communication <span class="quarto-category-count">(1)</span></div><div class="category" data-category="cHVibGljYXRpb25z">publications <span class="quarto-category-count">(1)</span></div><div class="category" data-category="cmVzZWFyY2g=">research <span class="quarto-category-count">(1)</span></div><div class="category" data-category="dHV0b3JpYWxz">tutorials <span class="quarto-category-count">(1)</span></div></div></div>
 <!-- main -->
 <main class="content quarto-banner-title-block column-page-left" id="quarto-document-content">
 
@@ -207,7 +207,7 @@ window.Quarto = {
 
 <div class="quarto-listing quarto-listing-container-default" id="listing-listing">
 <div class="list quarto-listing-default">
-<div class="quarto-post image-right" data-index="0" data-categories="cmVzZWFyY2glMkNwdWJsaWNhdGlvbnMlMkNiaW9pbmZvcm1hdGljcw==" data-listing-date-sort="1771822800000" data-listing-file-modified-sort="1771866581706" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="7" data-listing-word-count-sort="1252">
+<div class="quarto-post image-right" data-index="0" data-categories="cmVzZWFyY2glMkNwdWJsaWNhdGlvbnMlMkNiaW9pbmZvcm1hdGljcw==" data-listing-date-sort="1771909200000" data-listing-file-modified-sort="1771866581706" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="7" data-listing-word-count-sort="1252">
 <div class="thumbnail"><a href="./posts/papers/index.html" class="no-external">
 
 <div class="listing-item-img-placeholder card-img-top" >&nbsp;</div>
@@ -233,7 +233,7 @@ window.Quarto = {
 <div class="metadata">
 <a href="./posts/papers/index.html" class="no-external">
 <div class="listing-date">
-Feb 23, 2026
+Feb 24, 2026
 </div>
 <div class="listing-author">
 Sadie Wisotsky
@@ -266,6 +266,31 @@ As part of my time as a postdoc at IGEM in Temple University, I recorded a serie
 <a href="./posts/HyPhy-videos/index.html" class="no-external">
 <div class="listing-date">
 Feb 20, 2026
+</div>
+<div class="listing-author">
+Sadie Wisotsky
+</div>
+</a>
+</div>
+</div>
+<div class="quarto-post image-right" data-index="2" data-listing-date-sort="1759118400000" data-listing-file-modified-sort="1771944719312" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="6" data-listing-word-count-sort="1048">
+<div class="thumbnail"><a href="./posts/pins_tut/index.html" class="no-external">
+
+<div class="listing-item-img-placeholder card-img-top" >&nbsp;</div>
+
+</a></div>
+<div class="body">
+<h3 class="no-anchor listing-title">
+<a href="./posts/pins_tut/index.html" class="no-external">Upload pins for use with data explorer app</a>
+</h3>
+<div class="delink listing-description"><a href="./posts/pins_tut/index.html" class="no-external">
+This should walk a user through adding data to the pins folder on sharepoint and getting it to show up in the data sharing app on the shiny-server.
+</a></div>
+</div>
+<div class="metadata">
+<a href="./posts/pins_tut/index.html" class="no-external">
+<div class="listing-date">
+Sep 29, 2025
 </div>
 <div class="listing-author">
 Sadie Wisotsky
@@ -349,7 +374,7 @@ Sadie Wisotsky
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp("https:\/\/srwis\.github\.io\/personal_site\/");
+        var filterRegex = new RegExp('/' + window.location.host + '/');
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }

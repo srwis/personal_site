@@ -32,7 +32,7 @@
     "href": "index.html",
     "title": "Sadie Wisotsky",
     "section": "",
-    "text": "Publications\n\n\n\nresearch\n\npublications\n\nbioinformatics\n\n\n\n\n\n\n\n\n\nFeb 23, 2026\n\n\nSadie Wisotsky\n\n\n\n\n\n\n\n\n\n\n\n\nHyphy tutorials\n\n\n\ncommunication\n\ntutorials\n\n\n\n\n\n\n\n\n\nFeb 20, 2026\n\n\nSadie Wisotsky\n\n\n\n\n\nNo matching items"
+    "text": "Publications\n\n\n\nresearch\n\npublications\n\nbioinformatics\n\n\n\n\n\n\n\n\n\nFeb 24, 2026\n\n\nSadie Wisotsky\n\n\n\n\n\n\n\n\n\n\n\n\nHyphy tutorials\n\n\n\ncommunication\n\ntutorials\n\n\n\n\n\n\n\n\n\nFeb 20, 2026\n\n\nSadie Wisotsky\n\n\n\n\n\n\n\n\n\n\n\n\nUpload pins for use with data explorer app\n\n\n\n\n\n\n\n\nSep 29, 2025\n\n\nSadie Wisotsky\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "about.html",
@@ -54,5 +54,47 @@
     "title": "Hyphy tutorials",
     "section": "",
     "text": "As part of my time as a postdoc at IGEM in Temple University, I recorded a series of youtube video for the HyPhy software package.\nThis video describe how to use BUSTED[S], a model I developed in graduate school while at NCSU. The paper for which can be read here.\n\nThe rest of the tutorial videos can be found on the HyPhy Youtube."
+  },
+  {
+    "objectID": "posts/pins_tut/index.html",
+    "href": "posts/pins_tut/index.html",
+    "title": "Upload pins for use with data explorer app",
+    "section": "",
+    "text": "This should walk a user through adding data to the pins folder on sharepoint and getting it to show up in the data sharing app on the shiny-server.\n\n\nfirst read the data in that you want to upload\n\nlibrary(tidyverse)\n\niris.dat &lt;- data(iris)\n\ntake a peak at the data and also here is where you’d do any data manipulation to it (add columns, calculations, etc. )\n\nsummary(iris)\n\n\n\n\n\nlibrary(pins)\n#library(Microsoft365R)\n\nsite &lt;- \"[placeholder]\"\nfolder &lt;- \"../pins/tutorial\" #change the folder based on where you wish the pins to end up. can also make a new folder for a new study or project\n\n\n\n# only needed if pins are stored remotely on a sharepoint site\n#sp &lt;- get_sharepoint_site(site_id = site)  \n#doclib &lt;- sp$get_drive()\n#board &lt;- board_ms365(doclib, folder) \n\ncan take a peak at the pins that already exist in this folder. Note that the pins listed here will not necessarily reflect the pins listed in the app because of the Upload = TRUE metadata step we will show later.\n\npin_list(board)"
+  },
+  {
+    "objectID": "posts/pins_tut/index.html#purpose",
+    "href": "posts/pins_tut/index.html#purpose",
+    "title": "Upload pins for use with data explorer app",
+    "section": "",
+    "text": "This should walk a user through adding data to the pins folder on sharepoint and getting it to show up in the data sharing app on the shiny-server.\n\n\nfirst read the data in that you want to upload\n\nlibrary(tidyverse)\n\niris.dat &lt;- data(iris)\n\ntake a peak at the data and also here is where you’d do any data manipulation to it (add columns, calculations, etc. )\n\nsummary(iris)\n\n\n\n\n\nlibrary(pins)\n#library(Microsoft365R)\n\nsite &lt;- \"[placeholder]\"\nfolder &lt;- \"../pins/tutorial\" #change the folder based on where you wish the pins to end up. can also make a new folder for a new study or project\n\n\n\n# only needed if pins are stored remotely on a sharepoint site\n#sp &lt;- get_sharepoint_site(site_id = site)  \n#doclib &lt;- sp$get_drive()\n#board &lt;- board_ms365(doclib, folder) \n\ncan take a peak at the pins that already exist in this folder. Note that the pins listed here will not necessarily reflect the pins listed in the app because of the Upload = TRUE metadata step we will show later.\n\npin_list(board)"
+  },
+  {
+    "objectID": "posts/pins_tut/index.html#create-new-pin",
+    "href": "posts/pins_tut/index.html#create-new-pin",
+    "title": "Upload pins for use with data explorer app",
+    "section": "create new pin",
+    "text": "create new pin\nhere we are going to use pin_write to create a new pin in the folder. For the app, I’ve tried to include column names, a short description of the data, and some informative tags you will see how they get added here. additionally in the custom metadata section I have added a flag called “Upload”, if “Upload” = TRUE then the data is meant to appear in the data delivery app. If “Upload” is FALSE or missing, it will not appear in the data delivery app. This should allow BFX to use the same pins folders for BFX only work and for end stage data delivery.\n\ncnames &lt;- colnames(iris) # get column names\n\ndesc &lt;- \"default IRIS data for pins upload vingette\"\n\npin_write(board,\n          iris,\n          name = \"IRIS\",\n          #title = meta$title,\n          description = desc,\n          metadata = list(\n            \"Column Names\" = cnames,\n            \"Upload\" = TRUE #change if you do not wish to share with the app \n          ),\n          tags = c(\"example\", \"IRIS\"),\n          type = \"rds\",\n          force_identical_write = TRUE # forces rewrite with changed metadata. otherwise only over writes if data itself has changed.\n)\n\ncheck out the pin’s metadata\n\nmeta &lt;- pin_meta(board, \"IRIS\")\nmeta"
+  },
+  {
+    "objectID": "posts/pins_tut/index.html#add-pin-to-the-app",
+    "href": "posts/pins_tut/index.html#add-pin-to-the-app",
+    "title": "Upload pins for use with data explorer app",
+    "section": "Add pin to the app",
+    "text": "Add pin to the app\nso now the pin is officially in the pins sharepoint folder and should have the correct metadata.\nthe next step to get it to show up in the app is to add it to the pin called metadata_list that I created for each study.\nthis exists because mapping over each pin and reading its data in real time was slowing down the app. so we do this before hand; outside of the app. But it means a pin will not show up in the app until this list has been refreshed by running this code\n\nlist.of.pins &lt;- pin_list(board)\nmetas &lt;- purrr::map(list.of.pins, purrr::possibly(.f = \\(x) pin_meta(board, x), \n                                           otherwise= \"error\"))\n \n\npin_write( board = board, metas, name = \"metadata_list\", type = \"rds\")"
+  },
+  {
+    "objectID": "posts/pins_tut/index.html#look-at-the-metadata_list",
+    "href": "posts/pins_tut/index.html#look-at-the-metadata_list",
+    "title": "Upload pins for use with data explorer app",
+    "section": "look at the metadata_list",
+    "text": "look at the metadata_list\nif you are curious about what is in the metadata_list pin you can find out with:\n\nmdl &lt;- pin_read(board, \"metadata_list\")\nmdl |&gt; glimpse()"
+  },
+  {
+    "objectID": "posts/pins_tut/index.html#code-from-the-app",
+    "href": "posts/pins_tut/index.html#code-from-the-app",
+    "title": "Upload pins for use with data explorer app",
+    "section": "code from the app",
+    "text": "code from the app\nif you are wondering why these steps are necessary the code for the app may be good to look at:\n    if (\"metadata_list\"%in%all.pins == TRUE) {\n      metas &lt;- pin_read(values$hi, \"metadata_list\")\n    }\n    else{\n      metas &lt;- purrr::map(all.pins, \n                          possibly(.f = \\(x) pin_meta(values$hi, x)))\n    }\n    \n    values$ups  &lt;- data.frame(\n      names = map(metas, ~pluck(., \"name\", \n                                .default = \"skip\")) %&gt;% unlist(),\n      upload =map(metas, ~pluck(., \"user\", \"Upload\", \n                                .default = \"FALSE\"))%&gt;% \n        unlist(),\n      tags = map(metas, ~pluck(., \"tags\",  \n                               .default = \"FALSE\") %&gt;% \n                   paste(collapse = \",\")) %&gt;% unlist(),\n      ext = map(metas, ~pluck(., \"file\",\n                              .default = \"rds\")) |&gt; unlist()\n    )\nbasically, for every study folder, the code looks for a pin called metadata_list and if it exists, reads it in. If it doesn’t exist then it takes a minute to map over all the pins in a folder and read in the metadata for them while the app is live (this can take a long time depending on the number of pins in a folder.)\nand later on in the app the code populates the drop down choices with only the names of pins that have an Upload = TRUE value."
   }
 ]
