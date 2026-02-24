@@ -10,7 +10,7 @@
 <atom:link href="https://srwis.github.io/personal_site/index.xml" rel="self" type="application/rss+xml"/>
 <description>Babbling about Bioinformatics</description>
 <generator>quarto-1.8.27</generator>
-<lastBuildDate>Mon, 23 Feb 2026 05:00:00 GMT</lastBuildDate>
+<lastBuildDate>Tue, 24 Feb 2026 05:00:00 GMT</lastBuildDate>
 <item>
   <title>Publications</title>
   <dc:creator>Sadie Wisotsky</dc:creator>
@@ -190,7 +190,7 @@ This dissertation develops statistical approaches for detecting natural selectio
   <category>publications</category>
   <category>bioinformatics</category>
   <guid>https://srwis.github.io/personal_site/posts/papers/</guid>
-  <pubDate>Mon, 23 Feb 2026 05:00:00 GMT</pubDate>
+  <pubDate>Tue, 24 Feb 2026 05:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Hyphy tutorials</title>
@@ -214,6 +214,397 @@ This dissertation develops statistical approaches for detecting natural selectio
   <category>tutorials</category>
   <guid>https://srwis.github.io/personal_site/posts/HyPhy-videos/</guid>
   <pubDate>Fri, 20 Feb 2026 05:00:00 GMT</pubDate>
+</item>
+<item>
+  <title>Upload pins for use with data explorer app</title>
+  <dc:creator>Sadie Wisotsky</dc:creator>
+  <link>https://srwis.github.io/personal_site/posts/pins_tut/</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<section id="purpose" class="level2">
+<h2 class="anchored" data-anchor-id="purpose">Purpose</h2>
+<p>This should walk a user through adding data to the pins folder on sharepoint and getting it to show up in the data sharing app on the shiny-server.</p>
+<section id="get-your-data" class="level3">
+<h3 class="anchored" data-anchor-id="get-your-data">Get your data</h3>
+<p>first read the data in that you want to upload</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(tidyverse)</span>
+<span id="cb1-2"></span>
+<span id="cb1-3">iris.dat <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data</span>(iris)</span></code></pre></div></div>
+</div>
+<p>take a peak at the data and also here is where you’d do any data manipulation to it (add columns, calculations, etc. )</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">summary</span>(iris)</span></code></pre></div></div>
+</div>
+</section>
+<section id="connect-to-the-sharepoint" class="level3">
+<h3 class="anchored" data-anchor-id="connect-to-the-sharepoint">connect to the sharepoint</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(pins)</span>
+<span id="cb3-2"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#library(Microsoft365R)</span></span>
+<span id="cb3-3"></span>
+<span id="cb3-4">site <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"[placeholder]"</span></span>
+<span id="cb3-5">folder <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"../pins/tutorial"</span> <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#change the folder based on where you wish the pins to end up. can also make a new folder for a new study or project</span></span>
+<span id="cb3-6"></span>
+<span id="cb3-7"></span>
+<span id="cb3-8"></span>
+<span id="cb3-9"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># only needed if pins are stored remotely on a sharepoint site</span></span>
+<span id="cb3-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#sp &lt;- get_sharepoint_site(site_id = site)  </span></span>
+<span id="cb3-11"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#doclib &lt;- sp$get_drive()</span></span>
+<span id="cb3-12"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#board &lt;- board_ms365(doclib, folder) </span></span></code></pre></div></div>
+</div>
+<p>can take a peak at the pins that already exist in this folder. Note that the pins listed here will not necessarily reflect the pins listed in the app because of the Upload = TRUE metadata step we will show later.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pin_list</span>(board)</span></code></pre></div></div>
+</div>
+</section>
+</section>
+<section id="create-new-pin" class="level2">
+<h2 class="anchored" data-anchor-id="create-new-pin">create new pin</h2>
+<p>here we are going to use pin_write to create a new pin in the folder. For the app, I’ve tried to include column names, a short description of the data, and some informative tags you will see how they get added here. additionally in the custom metadata section I have added a flag called “Upload”, if “Upload” = TRUE then the data is meant to appear in the data delivery app. If “Upload” is FALSE or missing, it will not appear in the data delivery app. This should allow BFX to use the same pins folders for BFX only work and for end stage data delivery.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1">cnames <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">colnames</span>(iris) <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># get column names</span></span>
+<span id="cb5-2"></span>
+<span id="cb5-3">desc <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"default IRIS data for pins upload vingette"</span></span>
+<span id="cb5-4"></span>
+<span id="cb5-5"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pin_write</span>(board,</span>
+<span id="cb5-6">          iris,</span>
+<span id="cb5-7">          <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">name =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"IRIS"</span>,</span>
+<span id="cb5-8">          <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#title = meta$title,</span></span>
+<span id="cb5-9">          <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">description =</span> desc,</span>
+<span id="cb5-10">          <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">metadata =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list</span>(</span>
+<span id="cb5-11">            <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Column Names"</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">=</span> cnames,</span>
+<span id="cb5-12">            <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Upload"</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">=</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span> <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#change if you do not wish to share with the app </span></span>
+<span id="cb5-13">          ),</span>
+<span id="cb5-14">          <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">tags =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"example"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"IRIS"</span>),</span>
+<span id="cb5-15">          <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">type =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"rds"</span>,</span>
+<span id="cb5-16">          <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">force_identical_write =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span> <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># forces rewrite with changed metadata. otherwise only over writes if data itself has changed.</span></span>
+<span id="cb5-17">)</span></code></pre></div></div>
+</div>
+<p>check out the pin’s metadata</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1">meta <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pin_meta</span>(board, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"IRIS"</span>)</span>
+<span id="cb6-2">meta</span></code></pre></div></div>
+</div>
+</section>
+<section id="add-pin-to-the-app" class="level2">
+<h2 class="anchored" data-anchor-id="add-pin-to-the-app">Add pin to the app</h2>
+<p>so now the pin is officially in the pins sharepoint folder and should have the correct metadata.</p>
+<p>the next step to get it to show up in the app is to add it to the pin called <code>metadata_list</code> that I created for each study.</p>
+<p>this exists because mapping over each pin and reading its data in real time was slowing down the app. so we do this before hand; outside of the app. But it means a pin will not show up in the app until this list has been refreshed by running this code</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1">list.of.pins <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pin_list</span>(board)</span>
+<span id="cb7-2">metas <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> purrr<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">map</span>(list.of.pins, purrr<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">possibly</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">.f =</span> \(x) <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pin_meta</span>(board, x), </span>
+<span id="cb7-3">                                           <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">otherwise=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"error"</span>))</span>
+<span id="cb7-4"> </span>
+<span id="cb7-5"></span>
+<span id="cb7-6"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pin_write</span>( <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">board =</span> board, metas, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">name =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"metadata_list"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">type =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"rds"</span>)</span></code></pre></div></div>
+</div>
+</section>
+<section id="look-at-the-metadata_list" class="level2">
+<h2 class="anchored" data-anchor-id="look-at-the-metadata_list">look at the metadata_list</h2>
+<p>if you are curious about what is in the metadata_list pin you can find out with:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1">mdl <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pin_read</span>(board, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"metadata_list"</span>)</span>
+<span id="cb8-2">mdl <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">glimpse</span>()</span></code></pre></div></div>
+</div>
+</section>
+<section id="code-from-the-app" class="level2">
+<h2 class="anchored" data-anchor-id="code-from-the-app">code from the app</h2>
+<p>if you are wondering why these steps are necessary the code for the app may be good to look at:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="overview" style="background: #f1f3f5;"><pre class="sourceCode R code-with-copy"><code class="sourceCode r"><span id="overview-1">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> (<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"metadata_list"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%in%</span>all.pins <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>) {</span>
+<span id="overview-2">      metas <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pin_read</span>(values<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>hi, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"metadata_list"</span>)</span>
+<span id="overview-3">    }</span>
+<span id="overview-4">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">else</span>{</span>
+<span id="overview-5">      metas <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> purrr<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">map</span>(all.pins, </span>
+<span id="overview-6">                          <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">possibly</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">.f =</span> \(x) <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pin_meta</span>(values<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>hi, x)))</span>
+<span id="overview-7">    }</span>
+<span id="overview-8">    </span>
+<span id="overview-9">    values<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>ups  <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(</span>
+<span id="overview-10">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">names =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">map</span>(metas, <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pluck</span>(., <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"name"</span>, </span>
+<span id="overview-11">                                <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">.default =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"skip"</span>)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unlist</span>(),</span>
+<span id="overview-12">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">upload =</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">map</span>(metas, <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pluck</span>(., <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"user"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Upload"</span>, </span>
+<span id="overview-13">                                <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">.default =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"FALSE"</span>))<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span> </span>
+<span id="overview-14">        <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unlist</span>(),</span>
+<span id="overview-15">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">tags =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">map</span>(metas, <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pluck</span>(., <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"tags"</span>,  </span>
+<span id="overview-16">                               <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">.default =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"FALSE"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span> </span>
+<span id="overview-17">                   <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">collapse =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">","</span>)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unlist</span>(),</span>
+<span id="overview-18">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">ext =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">map</span>(metas, <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pluck</span>(., <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"file"</span>,</span>
+<span id="overview-19">                              <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">.default =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"rds"</span>)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unlist</span>()</span>
+<span id="overview-20">    )</span></code></pre></div></div>
+<p>basically, for every study folder, the code looks for a pin called metadata_list and if it exists, reads it in. If it doesn’t exist then it takes a minute to map over all the pins in a folder and read in the metadata for them while the app is live (this can take a long time depending on the number of pins in a folder.)</p>
+<p>and later on in the app the code populates the drop down choices with only the names of pins that have an Upload = TRUE value.</p>
+
+
+</section>
+
+ ]]></description>
+  <guid>https://srwis.github.io/personal_site/posts/pins_tut/</guid>
+  <pubDate>Mon, 29 Sep 2025 04:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>
