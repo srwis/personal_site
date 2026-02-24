@@ -7,9 +7,6 @@ execute:
 format:
   html:
     toc: true
-    embed-resources: true
-  typst: default
- 
 ---
 
 ## Purpose

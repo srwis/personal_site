@@ -131,7 +131,7 @@ window.Quarto = {
 </script>
 
 <link rel="stylesheet" href="styles.css">
-<link rel="alternate" type="application/rss+xml" title="Sadie Wisotsky: Bioinfomatician" href="index.xml" data-external="1"></head>
+</head>
 
 <body class="nav-fixed quarto-light">
 
@@ -273,7 +273,7 @@ Sadie Wisotsky
 </a>
 </div>
 </div>
-<div class="quarto-post image-right" data-index="2" data-listing-date-sort="1759118400000" data-listing-file-modified-sort="1771945404125" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="6" data-listing-word-count-sort="1081">
+<div class="quarto-post image-right" data-index="2" data-listing-date-sort="1759118400000" data-listing-file-modified-sort="1771947493164" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="6" data-listing-word-count-sort="1081">
 <div class="thumbnail"><a href="./posts/pins_tut/index.html" class="no-external">
 
 <div class="listing-item-img-placeholder card-img-top" >&nbsp;</div>
@@ -284,7 +284,7 @@ Sadie Wisotsky
 <a href="./posts/pins_tut/index.html" class="no-external">Upload pins for use with data explorer app</a>
 </h3>
 <div class="delink listing-description"><a href="./posts/pins_tut/index.html" class="no-external">
-This should walk a user through adding data to the pins folder on sharepoint and getting it to show up in the data sharing app on the shiny-server.
+This is a walkthrough of how I set up a pins folder and added data to it. The tags and folder structures combine with a coming shiny app that allows you to filter data sets…
 </a></div>
 </div>
 <div class="metadata">
@@ -374,7 +374,7 @@ Sadie Wisotsky
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp("https:\/\/srwis\.github\.io\/personal_site\/");
+        var filterRegex = new RegExp('/' + window.location.host + '/');
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }
