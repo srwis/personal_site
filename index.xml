@@ -227,7 +227,7 @@ This dissertation develops statistical approaches for detecting natural selectio
 
 <section id="purpose" class="level2">
 <h2 class="anchored" data-anchor-id="purpose">Purpose</h2>
-<p>This should walk a user through adding data to the pins folder on sharepoint and getting it to show up in the data sharing app on the shiny-server.</p>
+<p>This is a walkthrough of how I set up a pins folder and added data to it. The tags and folder structures combine with a coming shiny app that allows you to filter data sets before downloading them. This is essentially my first attempt at an ETL pipeline using R only and prior to pushing for a switch to an SQL data warehouse and true ETL pipeline.</p>
 <section id="get-your-data" class="level3">
 <h3 class="anchored" data-anchor-id="get-your-data">Get your data</h3>
 <p>first read the data in that you want to upload</p>
@@ -279,11 +279,14 @@ background-color: null;
 font-style: inherit;"># only needed if pins are stored remotely on a sharepoint site</span></span>
 <span id="cb3-10"><span class="co" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">#sp &lt;- get_sharepoint_site(site_id = site)  </span></span>
+font-style: inherit;"># can also change this if data is on google drive, aws, etc</span></span>
 <span id="cb3-11"><span class="co" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">#doclib &lt;- sp$get_drive()</span></span>
+font-style: inherit;">#sp &lt;- get_sharepoint_site(site_id = site)  </span></span>
 <span id="cb3-12"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#doclib &lt;- sp$get_drive()</span></span>
+<span id="cb3-13"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">#board &lt;- board_ms365(doclib, folder) </span></span></code></pre></div></div>
 </div>
@@ -297,7 +300,7 @@ font-style: inherit;">pin_list</span>(board)</span></code></pre></div></div>
 </section>
 <section id="create-new-pin" class="level2">
 <h2 class="anchored" data-anchor-id="create-new-pin">create new pin</h2>
-<p>here we are going to use pin_write to create a new pin in the folder. For the app, I’ve tried to include column names, a short description of the data, and some informative tags you will see how they get added here. additionally in the custom metadata section I have added a flag called “Upload”, if “Upload” = TRUE then the data is meant to appear in the data delivery app. If “Upload” is FALSE or missing, it will not appear in the data delivery app. This should allow BFX to use the same pins folders for BFX only work and for end stage data delivery.</p>
+<p>here we are going to use pin_write to create a new pin in the folder. For the app, I’ve tried to include column names, a short description of the data, and some informative tags you will see how they get added here. additionally in the custom metadata section I have added a flag called “Upload”, if “Upload” = TRUE then the data is meant to appear in the data delivery app. If “Upload” is FALSE or missing, it will not appear in the data delivery app.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1">cnames <span class="ot" style="color: #003B4F;
 background-color: null;
@@ -385,7 +388,7 @@ font-style: inherit;">"IRIS"</span>)</span>
 </section>
 <section id="add-pin-to-the-app" class="level2">
 <h2 class="anchored" data-anchor-id="add-pin-to-the-app">Add pin to the app</h2>
-<p>so now the pin is officially in the pins sharepoint folder and should have the correct metadata.</p>
+<p>so now the pin is officially in the pins folder and should have the correct metadata.</p>
 <p>the next step to get it to show up in the app is to add it to the pin called <code>metadata_list</code> that I created for each study.</p>
 <p>this exists because mapping over each pin and reading its data in real time was slowing down the app. so we do this before hand; outside of the app. But it means a pin will not show up in the app until this list has been refreshed by running this code</p>
 <div class="cell">

@@ -3964,7 +3964,7 @@ vertical-align: -.125em;
 
 <section id="purpose" class="level2">
 <h2 class="anchored" data-anchor-id="purpose">Purpose</h2>
-<p>This should walk a user through adding data to the pins folder on sharepoint and getting it to show up in the data sharing app on the shiny-server.</p>
+<p>This is a walkthrough of how I set up a pins folder and added data to it. The tags and folder structures combine with a coming shiny app that allows you to filter data sets before downloading them. This is essentially my first attempt at an ETL pipeline using R only and prior to pushing for a switch to an SQL data warehouse and true ETL pipeline.</p>
 <section id="get-your-data" class="level3">
 <h3 class="anchored" data-anchor-id="get-your-data">Get your data</h3>
 <p>first read the data in that you want to upload</p>
@@ -3990,9 +3990,10 @@ vertical-align: -.125em;
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co"># only needed if pins are stored remotely on a sharepoint site</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co">#sp &lt;- get_sharepoint_site(site_id = site)  </span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co">#doclib &lt;- sp$get_drive()</span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co">#board &lt;- board_ms365(doclib, folder) </span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co"># can also change this if data is on google drive, aws, etc</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co">#sp &lt;- get_sharepoint_site(site_id = site)  </span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co">#doclib &lt;- sp$get_drive()</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co">#board &lt;- board_ms365(doclib, folder) </span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>can take a peak at the pins that already exist in this folder. Note that the pins listed here will not necessarily reflect the pins listed in the app because of the Upload = TRUE metadata step we will show later.</p>
 <div class="cell">
@@ -4002,7 +4003,7 @@ vertical-align: -.125em;
 </section>
 <section id="create-new-pin" class="level2">
 <h2 class="anchored" data-anchor-id="create-new-pin">create new pin</h2>
-<p>here we are going to use pin_write to create a new pin in the folder. For the app, I’ve tried to include column names, a short description of the data, and some informative tags you will see how they get added here. additionally in the custom metadata section I have added a flag called “Upload”, if “Upload” = TRUE then the data is meant to appear in the data delivery app. If “Upload” is FALSE or missing, it will not appear in the data delivery app. This should allow BFX to use the same pins folders for BFX only work and for end stage data delivery.</p>
+<p>here we are going to use pin_write to create a new pin in the folder. For the app, I’ve tried to include column names, a short description of the data, and some informative tags you will see how they get added here. additionally in the custom metadata section I have added a flag called “Upload”, if “Upload” = TRUE then the data is meant to appear in the data delivery app. If “Upload” is FALSE or missing, it will not appear in the data delivery app.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>cnames <span class="ot">&lt;-</span> <span class="fu">colnames</span>(iris) <span class="co"># get column names</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -4030,7 +4031,7 @@ vertical-align: -.125em;
 </section>
 <section id="add-pin-to-the-app" class="level2">
 <h2 class="anchored" data-anchor-id="add-pin-to-the-app">Add pin to the app</h2>
-<p>so now the pin is officially in the pins sharepoint folder and should have the correct metadata.</p>
+<p>so now the pin is officially in the pins folder and should have the correct metadata.</p>
 <p>the next step to get it to show up in the app is to add it to the pin called <code>metadata_list</code> that I created for each study.</p>
 <p>this exists because mapping over each pin and reading its data in real time was slowing down the app. so we do this before hand; outside of the app. But it means a pin will not show up in the app until this list has been refreshed by running this code</p>
 <div class="cell">
