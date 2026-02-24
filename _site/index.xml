@@ -6,15 +6,15 @@
       version="2.0">
 <channel>
 <title>Sadie Wisotsky: Bioinfomatician</title>
-<link>srwis.github.io/personal_site/</link>
-<atom:link href="srwis.github.io/personal_site/index.xml" rel="self" type="application/rss+xml"/>
+<link>https://srwis.github.io/personal_site/</link>
+<atom:link href="https://srwis.github.io/personal_site/index.xml" rel="self" type="application/rss+xml"/>
 <description>Babbling about Bioinformatics</description>
 <generator>quarto-1.8.27</generator>
 <lastBuildDate>Mon, 23 Feb 2026 05:00:00 GMT</lastBuildDate>
 <item>
   <title>Publications</title>
   <dc:creator>Sadie Wisotsky</dc:creator>
-  <link>srwis.github.io/personal_site/posts/papers/</link>
+  <link>https://srwis.github.io/personal_site/posts/papers/</link>
   <description><![CDATA[ 
 
 
@@ -26,7 +26,7 @@
 <section id="section" class="level3">
 <h3 class="anchored" data-anchor-id="section">2026</h3>
 <ul>
-<li><p>🧪 <strong>Cancer Immunology Research (AACR)</strong> <strong>Reuschel, E. L., Sylvester, A., Marcus, S., Wisotsky, S., Dolgoter, A., Reed, K. S., Tan, G. S., Skolnik, J. M., Gillespie, E. (2024).</strong> <em>Treatment of Recurrent Respiratory Papillomatosis with DNA immunotherapy INO-3107 induces activation and enrichment of pro-inflammatory CD4+ T cell responses in blood and airways of patients with clinical response</em></p>
+<li><p>🧪 <strong>Cancer Immunology Research (AACR)</strong> <strong>Reuschel, E. L., Sylvester, A., Marcus, S., Wisotsky, S., Dolgoter, A., Reed, K. S., Tan, G. S., Skolnik, J. M., Gillespie, E. (2024).</strong> <em>Treatment of Recurrent Respiratory Papillomatosis with DNA immunotherapy INO-3107 induces activation and enrichment of pro-inflammatory CD4+ T cell responses in blood and airways of patients with clinical response</em> https://doi.org/10.1158/2326-6074.IO2026-A060</p>
 <details>
 <summary>
 <p><strong>Abstract</strong></p>
@@ -189,13 +189,13 @@ This dissertation develops statistical approaches for detecting natural selectio
   <category>research</category>
   <category>publications</category>
   <category>bioinformatics</category>
-  <guid>srwis.github.io/personal_site/posts/papers/</guid>
+  <guid>https://srwis.github.io/personal_site/posts/papers/</guid>
   <pubDate>Mon, 23 Feb 2026 05:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Hyphy tutorials</title>
   <dc:creator>Sadie Wisotsky</dc:creator>
-  <link>srwis.github.io/personal_site/posts/HyPhy-videos/</link>
+  <link>https://srwis.github.io/personal_site/posts/HyPhy-videos/</link>
   <description><![CDATA[ 
 
 
@@ -212,7 +212,7 @@ This dissertation develops statistical approaches for detecting natural selectio
  ]]></description>
   <category>communication</category>
   <category>tutorials</category>
-  <guid>srwis.github.io/personal_site/posts/HyPhy-videos/</guid>
+  <guid>https://srwis.github.io/personal_site/posts/HyPhy-videos/</guid>
   <pubDate>Fri, 20 Feb 2026 05:00:00 GMT</pubDate>
 </item>
 </channel>
