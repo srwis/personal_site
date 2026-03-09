@@ -42,11 +42,18 @@
     "text": "code from the app\nif you are wondering why these steps are necessary the code for the app may be good to look at:\n    if (\"metadata_list\"%in%all.pins == TRUE) {\n      metas &lt;- pin_read(values$hi, \"metadata_list\")\n    }\n    else{\n      metas &lt;- purrr::map(all.pins, \n                          possibly(.f = \\(x) pin_meta(values$hi, x)))\n    }\n    \n    values$ups  &lt;- data.frame(\n      names = map(metas, ~pluck(., \"name\", \n                                .default = \"skip\")) %&gt;% unlist(),\n      upload =map(metas, ~pluck(., \"user\", \"Upload\", \n                                .default = \"FALSE\"))%&gt;% \n        unlist(),\n      tags = map(metas, ~pluck(., \"tags\",  \n                               .default = \"FALSE\") %&gt;% \n                   paste(collapse = \",\")) %&gt;% unlist(),\n      ext = map(metas, ~pluck(., \"file\",\n                              .default = \"rds\")) |&gt; unlist()\n    )\nbasically, for every study folder, the code looks for a pin called metadata_list and if it exists, reads it in. If it doesn’t exist then it takes a minute to map over all the pins in a folder and read in the metadata for them while the app is live (this can take a long time depending on the number of pins in a folder.)\nand later on in the app the code populates the drop down choices with only the names of pins that have an Upload = TRUE value."
   },
   {
-    "objectID": "posts/HyPhy-videos/index.html",
-    "href": "posts/HyPhy-videos/index.html",
-    "title": "Hyphy tutorials",
+    "objectID": "posts/LLM_evaluation/index.html",
+    "href": "posts/LLM_evaluation/index.html",
+    "title": "LLM Evaluation",
     "section": "",
-    "text": "As part of my time as a postdoc at IGEM in Temple University, I recorded a series of youtube video for the HyPhy software package.\nThis video describe how to use BUSTED[S], a model I developed in graduate school while at NCSU. The paper for which can be read here.\n\nThe rest of the tutorial videos can be found on the HyPhy Youtube."
+    "text": "coming soon"
+  },
+  {
+    "objectID": "posts/data_exploration/index.html",
+    "href": "posts/data_exploration/index.html",
+    "title": "Data Exploration App",
+    "section": "",
+    "text": "When I joined my previous group the main method of transferring data post analysis was simply to email Excel files back and forth as changes were made. This works fine as long as the data is small enough to fit in an Excel workbook with all its row and column limits and you don’t care about tracking the versioning of the data any deeper than tacking on dates at the end of the file names.\nFor some of our analyses the size limits of Excel were already starting to become a problem. We’d have to find ways that made sense to break up the data and send it in multiple workbooks for downstream users to piece back together as they needed. Then I attended Posit::conf in 2024 and saw an incredible talk on an R package called pins.\nPins became the missing piece in building a basic ETL (extract, transform, load) pipeling for a Shiny App that allowed downstream users to easily search for, preview, and filter the data they needed. I was able to clean data, perform requested anlayses on it and then upload it to a Sharepoint board.\nI decided to develope a Shiny app to make it easier for non-R users to access the data. The app allows a user to select the study they are interested in retrieving data for and using the pins metadata, displays descriptions of the data, including the column names, number of rows, and the date the data was last updated. It then allows users to decide what columns to include in the data and allows for additional filtering of the data by parameters before download as often times our users were only interested in a particular subset of the data.\nThis elimated the need to email files back and forth and allowed Bioinformatics to better track the versioning of the data if/when additional samples or analyses were added."
   },
   {
     "objectID": "about.html",
@@ -67,7 +74,14 @@
     "href": "index.html",
     "title": "Sadie Wisotsky",
     "section": "",
-    "text": "Publications\n\n\n\nresearch\n\npublications\n\nbioinformatics\n\n\n\n\n\n\n\n\n\nFeb 24, 2026\n\n\nSadie Wisotsky\n\n\n\n\n\n\n\n\n\n\n\n\nHyphy tutorials\n\n\n\ncommunication\n\ntutorials\n\n\n\n\n\n\n\n\n\nFeb 20, 2026\n\n\nSadie Wisotsky\n\n\n\n\n\n\n\n\n\n\n\n\nUpload pins for use with data explorer app\n\n\n\n\n\n\n\n\nSep 29, 2025\n\n\nSadie Wisotsky\n\n\n\n\n\nNo matching items"
+    "text": "Publications\n\n\n\nresearch\n\npublications\n\nbioinformatics\n\n\n\n\n\n\n\n\n\nMar 9, 2026\n\n\nSadie Wisotsky\n\n\n\n\n\n\n\n\n\n\n\n\nData Exploration App\n\n\n\nshiny\n\nR\n\ndata exploration\n\npharma\n\npins\n\nETL\n\n\n\n\n\n\n\n\n\nFeb 28, 2026\n\n\nSadie Wisotsky\n\n\n\n\n\n\n\n\n\n\n\n\nHyphy tutorials\n\n\n\ncommunication\n\ntutorials\n\n\n\n\n\n\n\n\n\nFeb 20, 2026\n\n\nSadie Wisotsky\n\n\n\n\n\n\n\n\n\n\n\n\nUpload pins for use with data explorer app\n\n\n\n\n\n\n\n\nSep 29, 2025\n\n\nSadie Wisotsky\n\n\n\n\n\n\n\n\n\n\n\n\nLLM Evaluation\n\n\n\nshiny\n\nR\n\nLLM\n\npharma\n\nchat bot\n\n\n\n\n\n\n\n\n\nMar 25, 2025\n\n\nSadie Wisotsky\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "posts/HyPhy-videos/index.html",
+    "href": "posts/HyPhy-videos/index.html",
+    "title": "Hyphy tutorials",
+    "section": "",
+    "text": "As part of my time as a postdoc at IGEM in Temple University, I recorded a series of youtube video for the HyPhy software package.\nThis video describe how to use BUSTED[S], a model I developed in graduate school while at NCSU. The paper for which can be read here.\n\nThe rest of the tutorial videos can be found on the HyPhy Youtube."
   },
   {
     "objectID": "posts/papers/index.html",

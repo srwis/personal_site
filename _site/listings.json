@@ -3,8 +3,10 @@
     "listing": "/index.html",
     "items": [
       "/posts/papers/index.html",
+      "/posts/data_exploration/index.html",
       "/posts/HyPhy-videos/index.html",
-      "/posts/pins_tut/index.html"
+      "/posts/pins_tut/index.html",
+      "/posts/LLM_evaluation/index.html"
     ]
   }
 ]
