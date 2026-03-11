@@ -8,17 +8,26 @@ format:
     toc: false
 ---
 
+## Submitted / Under Review
+
+* **DNA Immunotherapy plus PD-1 Blockade for Newly Diagnosed Glioblastoma: Phase 1/2 Study Evaluating Safety, Efficacy, and Immunogenicity.** Submitted to *Nature Communications*.
+
+---
+
 ## Peer‑Reviewed Publications
 
 ### 2026
+
+- 
+
 - 🧪 **Cancer Immunology Research (AACR)** 
   **Reuschel, E. L., Sylvester, A., Marcus, S., Wisotsky, S., Dolgoter, A., Reed, K. S., Tan, G. S., Skolnik, J. M., Gillespie, E. (2024).** 
   *Treatment of Recurrent Respiratory Papillomatosis with DNA immunotherapy INO-3107 induces activation and enrichment of pro-inflammatory CD4+ T cell responses in blood and airways of patients with clinical response*
-  https://doi.org/10.1158/2326-6074.IO2026-A060
+  [https://doi.org/10.1158/2326-6074.IO2026-A060](https://doi.org/10.1158/2326-6074.IO2026-A060)
 
   <details>
   <summary><strong>Abstract</strong></summary>
-  Recurrent respiratory papillomatosis (RRP) is a chronic, debilitating disease of the airway primarily caused by infection with human papillomavirus (HPV) types 6 and/or 11 and characterized by recurrent, benign tumor growth with potential for malignant transformation. Current standard of care consists of repeated surgical removal of papillomas, which can lead to lasting airway damage and impaired vocal function. Thus, a non-surgical approach to treat RRP is paramount. Previously, we described CD8+ T cell responses associated with clinical response to INO-3107, a DNA immunotherapy designed to generate T cells capable of targeting HPV-infected cells, in adult RRP patients during a Phase 1/2 trial (NCT04398433). Here, we describe CD4+ T cell responses in these patients.
+ Recurrent respiratory papillomatosis (RRP) is a chronic, debilitating disease of the airway primarily caused by infection with human papillomavirus (HPV) types 6 and/or 11 and characterized by recurrent, benign tumor growth with potential for malignant transformation. Current standard of care consists of repeated surgical removal of papillomas, which can lead to lasting airway damage and impaired vocal function. Thus, a non-surgical approach to treat RRP is paramount. Previously, we described CD8+ T cell responses associated with clinical response to INO-3107, a DNA immunotherapy designed to generate T cells capable of targeting HPV-infected cells, in adult RRP patients during a Phase 1/2 trial (NCT04398433). Here, we describe CD4+ T cell responses in these patients.
   </details>
 
 ### 2025
@@ -26,11 +35,11 @@ format:
 - 🧪 **Nature Communications**  
   **Morrow, M. P., Gillespie, E., Sylvester, A., Amin, M. R., Belafsky, P. C., Best, S. R., ... Wisotsky, S. R., Marcus, S., Reuschel, E. L., Reed, K. S., Weiner, D. B., Dallas, M., Skolnik, J. M. (2025).**  
   *DNA immunotherapy for recurrent respiratory papillomatosis (RRP): Phase 1/2 study assessing efficacy, safety, and immunogenicity of INO‑3107.*  
-  https://doi.org/10.1038/s41467-025-56729-6  
+  [https://doi.org/10.1038/s41467-025-56729-6](https://doi.org/10.1038/s41467-025-56729-6)
 
 <details>
 <summary><strong>Abstract</strong></summary>  
-Recurrent respiratory papillomatosis (RRP) is a chronic airway disease caused by HPV. In this Phase 1/2 study, INO‑3107, a DNA immunotherapy targeting HPV‑6/‑11, was well‑tolerated and showed clinical benefit, reducing surgical interventions in participants and generating antigen‑specific T‑cell responses that correlated with clinical outcomes.
+Recurrent respiratory papillomatosis (RRP) is a chronic airway disease caused by Human Papillomavirus (HPV). INO-3107, DNA immunotherapy designed to elicit T-cells against HPV-6 and HPV-11, was evaluated in a 52-week Phase 1/2 study for efficacy, safety, and immunogenicity (NCT04398433). Thirty-two eligible adults with HPV-6 and/or HPV-11 RRP, requiring ≥2 surgical interventions in the year preceding dosing were enrolled between October 2020 and November 2021 and administered 4 INO-3107 doses by intramuscular injection followed by electroporation. The primary endpoint was safety and tolerability, as assessed by treatment-emergent adverse events (TEAEs). Secondary endpoints included surgical intervention frequency and change in RRP Severity Score (modified) post-INO-3107 and assessment of immune responses. 81% (26/32) of patients experienced surgery reduction following INO-3107 compared with the year prior to treatment. Blood assessments revealed HPV-6 and HPV-11 antigen-specific T-cell induction. RNA sequencing identified an inflammatory response in papillomas, inclusive of cytolytic CD8 + T-cell signatures. T-cell receptor sequencing revealed emergent T-cell clones in blood and confirmed trafficking to papillomas. Treatment-related adverse events (AEs) were reported in 13/32 (41%) patients, all low-grade. INO-3107 provides clinical benefit to HPV-6 and/or HPV-11-associated RRP adults and is well-tolerated. Importantly, treatment-induced peripheral T-cell responses traffic to airway tissue and are associated with clinical response.
 </details>
 
 ---
@@ -40,11 +49,11 @@ Recurrent respiratory papillomatosis (RRP) is a chronic airway disease caused by
 - 🧪 **Cancer Immunology Research (AACR)**  
   **Gillespie, E., Sylvester, A., Marcus, S., Reed, K., Reuschel, E. L., Wisotsky, S., et al (2024).**  
   *Reduction in Surgical Interventions for the Treatment of Recurrent Respiratory Papillomatosis by INO-3107 is Associated with Enriched Macrophage, Dendritic cell and T cell Signatures in Patient Airways*  
-  https://aacrjournals.org/cancerimmunolres/article/12/10_Supplement/A005/748902  
+[https://doi.org/10.1158/2326-6074.TUMIMM24-A005](https://doi.org/10.1158/2326-6074.TUMIMM24-A005)
 
 <details>
 <summary><strong>Abstract</strong></summary>  
-Recurrent respiratory papillomatosis (RRP) is a debilitating chronic disease of the airway caused by Human Papillomavirus (HPV) characterized by recurrent benign tumor growth with the potential for malignant transformation. The current standard of care requires frequent surgeries, the sequalae of which have long-standing negative impacts on airway and vocal function. Treatments that avoid surgery targeted against HPV6 and/or HPV11 (known etiological agents of RRP) are thus an area of need. Here we describe the results of a Phase 1/2 trial of INO-3107, a DNA therapy designed to elicit T-cell responses against HPV-6 and HPV-11, in adults with RRP (NCT04398433). Methods: Peripheral blood mononuclear cells (PBMCs) were assessed by IFNg ELISpot and TCRb sequencing of complementarity determining region 3 (CDR3). Formalin fixed paraffin embedded papilloma tissue obtained prior to INO-3107 treatment as well as at the end of the 52-week study was assessed by RNA sequencing. Data were analyzed using Ingenuity Pathway Analysis (IPA) and R. Overall clinical response (OCR) was defined as a reduction in surgical interventions recorded on study as compared to the year prior to study. Results: The OCR of the trial was 81.3%. Analysis of PBMCs longitudinally across the study via ELISpot confirmed induction of T cell activity specific to HPV-6 as well as HPV-11. TCRb sequencing of CDR3 regions indicated significant T cell clonal expansion in all patients. IPA based assessments indicated a number of significantly enriched immune pathways in airway tissue at the end of study relative to pre-treatment, spanning both innate and adaptive immune responses. For the former, enriched pathways were inclusive of recruitment (z=2.3, p=1.00e-10), migration (z=2.4, p=6.50e-15), quantity (z=2.3, p=1.37e-10), and response (z=3.0, p=5.85e-07) of antigen presenting cells, indicative of an innate inflammatory response. Upregulated genes included macrophage and dendritic cell associated transcripts such as IFNg, CIITA, XCR1, CD14 and others. For the latter, homing (z=2.4 , p=7.77e-06), quantity (z=2.7, p=6.27e-21), signaling (z=3.9, p=3.16e-12), and cytotoxicity (z=2.6, p=1.18e-06), of T cells were all significantly enriched, indicating a robust influx of activated T cells into airway tissue. T cell associated transcripts included CD3D/E/G, PRF1, CD8A, GZMA, and others. Conclusions: INO-3107 provides clinical benefit to adults with RRP, is well tolerated, and generates an antigen-specific immune response against HPV types 6 and 11. In total, 100% of patients on trial demonstrated T cell activity in blood after administration of IN0-3107, inclusive of antigen specific cytokine production and significantly expanded T cell populations. Moreover, treatment induced an inflammatory response in patient airway tissues, inclusive of signatures of macrophages, dendritic cells and T cells. Importantly, this activity was associated with overall clinical response
+ecurrent respiratory papillomatosis (RRP) is a debilitating chronic disease of the airway caused by Human Papillomavirus (HPV) characterized by recurrent benign tumor growth with the potential for malignant transformation. The current standard of care requires frequent surgeries, the sequalae of which have long-standing negative impacts on airway and vocal function. Treatments that avoid surgery targeted against HPV6 and/or HPV11 (known etiological agents of RRP) are thus an area of need. Here we describe the results of a Phase 1/2 trial of INO-3107, a DNA therapy designed to elicit T-cell responses against HPV-6 and HPV-11, in adults with RRP (NCT04398433). Methods: Peripheral blood mononuclear cells (PBMCs) were assessed by IFNg ELISpot and TCRb sequencing of complementarity determining region 3 (CDR3). Formalin fixed paraffin embedded papilloma tissue obtained prior to INO-3107 treatment as well as at the end of the 52-week study was assessed by RNA sequencing. Data were analyzed using Ingenuity Pathway Analysis (IPA) and R. Overall clinical response (OCR) was defined as a reduction in surgical interventions recorded on study as compared to the year prior to study. 
 </details>
 
 ---
@@ -54,21 +63,21 @@ Recurrent respiratory papillomatosis (RRP) is a debilitating chronic disease of 
 - 🟢 **PLoS ONE**  
   **Lucaci, A. G., Wisotsky, S. R., et al. (2021).**  
   *Extra base hits: Widespread empirical support for instantaneous multiple‑nucleotide changes.*  
-  https://doi.org/10.1371/journal.pone.0248337  
+  [https://doi.org/10.1371/journal.pone.0248337](https://doi.org/10.1371/journal.pone.0248337)
 
 <details>
 <summary><strong>Abstract</strong></summary>  
-This study provides empirical evidence for instantaneous multiple‑nucleotide substitutions across genomic datasets, challenging assumptions of strictly single‑nucleotide change models in evolutionary analyses.
+Despite many attempts to introduce evolutionary models that permit substitutions to instantly alter more than one nucleotide in a codon, the prevailing wisdom remains that such changes are rare and generally negligible or are reflective of non-biological artifacts, such as alignment errors. Codon models continue to posit that only single nucleotide change have non-zero rates. Here, we develop and test a simple hierarchy of codon-substitution models with non-zero evolutionary rates for only one-nucleotide (1H), one- and two-nucleotide (2H), or any (3H) codon substitutions. Using over 42, 000 empirical alignments, we find widespread statistical support for multiple hits: 61% of alignments prefer models with 2H allowed, and 23%—with 3H allowed. Analyses of simulated data suggest that these results are not likely to be due to simple artifacts such as model misspecification or alignment errors. Further modeling reveals that synonymous codon island jumping among codons encoding serine, especially along short branches, contributes significantly to this 3H signal. While serine codons were prominently involved in multiple-hit substitutions, there were other common exchanges contributing to better model fit. It appears that a small subset of sites in most alignments have unusual evolutionary dynamics not well explained by existing model formalisms, and that commonly estimated quantities, such as dN/dS ratios may be biased by model misspecification. Our findings highlight the need for continued evaluation of assumptions underlying workhorse evolutionary models and subsequent evolutionary inference techniques. We provide a software implementation for evolutionary biologists to assess the potential impact of extra base hits in their data in the HyPhy package and in the Datamonkey.org server.
 </details>
 
 - 🟣 **Molecular Ecology**  
   **Cui, R., Tyers, A. M., Juzar Malubhoy, Z., Wisotsky, S. R., et al. (2021).**  
   *Ancestral transoceanic colonization and recent population reduction in a nonannual killifish from the Seychelles archipelago.*  
-  https://doi.org/10.1111/mec.15982  
+  [https://doi.org/10.1111/mec.15982](https://doi.org/10.1111/mec.15982)
 
 <details>
 <summary><strong>Abstract</strong></summary>  
-Phylogenomic and species distribution evidence supports transoceanic dispersal events and recent population decline in Seychelles killifish, with genomic signals of relaxed developmental gene selection.
+Whether freshwater fish colonize remote islands following tectonic or transoceanic dispersal remains an evolutionary puzzle. Integrating dating of known tectonic events with phylogenomics and current species distribution, we find that killifish species distribution is not explained by species dispersal by tectonic drift only. Investigating the colonization of a nonannual killifish (golden panchax, Pachypanchax playfairii) on the Seychelle islands, we found genetic support for transoceanic dispersal and experimentally discovered an adaptation to complete tolerance to seawater. At the macroevolutionary scale, despite their long-lasting isolation, nonannual golden panchax show stronger genome-wide purifying selection than annual killifishes from continental Africa. However, progressive decline in effective population size over a more recent timescale has probably led to the segregation of slightly deleterious mutations across golden panchax populations, which represents a potential threat for species preservation in the long term.
 </details>
 
 ---
@@ -78,11 +87,11 @@ Phylogenomic and species distribution evidence supports transoceanic dispersal e
 - 🔵 **Molecular Biology and Evolution**  
   **Wisotsky, S. R., Kosakovsky Pond, S. L., Shank, S. D., & Muse, S. V. (2020).**  
   *Synonymous site‑to‑site substitution rate variation dramatically inflates false positive rates of selection analyses.*  
-  https://doi.org/10.1093/molbev/msaa037  
+  [https://doi.org/10.1093/molbev/msaa037](https://doi.org/10.1093/molbev/msaa037)
 
 <details>
 <summary><strong>Abstract</strong></summary>  
-Ignoring synonymous rate variation across sites can inflate false positive detection of natural selection in molecular data. Incorporating this variation improves evolutionary inference reliability.
+Most molecular evolutionary studies of natural selection maintain the decades-old assumption that synonymous substitution rate variation (SRV) across sites within genes occurs at levels that are either nonexistent or negligible. However, numerous studies challenge this assumption from a biological perspective and show that SRV is comparable in magnitude to that of nonsynonymous substitution rate variation. We evaluated the impact of this assumption on methods for inferring selection at the molecular level by incorporating SRV into an existing method (BUSTED) for detecting signatures of episodic diversifying selection in genes. Using simulated data we found that failing to account for even moderate levels of SRV in selection testing is likely to produce intolerably high false positive rates. To evaluate the effect of the SRV assumption on actual inferences we compared results of tests with and without the assumption in an empirical analysis of over 13,000 Euteleostomi (bony vertebrate) gene alignments from the Selectome database. This exercise reveals that close to 50% of positive results (i.e., evidence for selection) in empirical analyses disappear when SRV is modeled as part of the statistical analysis and are thus candidates for being false positives. The results from this work add to a growing literature establishing that tests of selection are much more sensitive to certain model assumptions than previously believed.
 </details>
 
 - 🔵 **Molecular Biology and Evolution**  
@@ -92,7 +101,7 @@ Ignoring synonymous rate variation across sites can inflate false positive detec
 
 <details>
 <summary><strong>Abstract</strong></summary>  
-Contrast‑FEL provides a method for identifying differences in selective pressures at specific sequence sites between phylogenetic clades.
+A number of evolutionary hypotheses can be tested by comparing selective pressures among sets of branches in a phylogenetic tree. When the question of interest is to identify specific sites within genes that may be evolving differently, a common approach is to perform separate analyses on subsets of sequences and compare parameter estimates in a post hoc fashion. This approach is statistically suboptimal and not always applicable. Here, we develop a simple extension of a popular fixed effects likelihood method in the context of codon-based evolutionary phylogenetic maximum likelihood testing, Contrast-FEL. It is suitable for identifying individual alignment sites where any among the sets of branches in a phylogenetic tree have detectably different ω ratios, indicative of different selective regimes. Using extensive simulations, we show that Contrast-FEL delivers good power, exceeding 90% for sufficiently large differences, while maintaining tight control over false positive rates, when the model is correctly specified. We conclude by applying Contrast-FEL to data from five previously published studies spanning a diverse range of organisms and focusing on different evolutionary questions.
 </details>
 
 - 🔵 **Molecular Biology and Evolution**  

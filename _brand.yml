@@ -1,0 +1,46 @@
+meta:
+  name:
+    short: BrandName # INSTRUCTION: Replace with your short brand name
+    full: BrandName Incorporated # INSTRUCTION: Replace with your full legal name
+  link:
+    home: https://www.example.com # INSTRUCTION: Replace with your home page URL
+
+logo:
+  images: 
+    # INSTRUCTION: Download your brand's logo files and place them in a 'logos' directory next to this file.
+    header: logos/header-logo.png
+    full: logos/full-logo.svg
+  medium: 
+    light: header 
+  large: full 
+
+color:
+  palette:
+    white: "#FFFFFF"
+    light-gray: "#B2B2B2"
+    slate: "#3E4E57"
+    black: "#2B363D" 
+    blue: "#5084C4"
+    dark-blue: "#3D6596"
+    cyan: "#36A0DA"
+    dark-cyan: "#2C83B2"
+    orange: "#F5AC3C"
+    dark-orange: "#D99835"
+
+  foreground: black
+  background: white
+  primary: blue
+  secondary: slate
+  info: cyan
+  warning: orange
+
+typography:
+  fonts:
+    - family: Roboto Slab
+      source: google
+      # INSTRUCTION: You can specify weights here if you want to limit the download size, e.g., weight: [400, 700]
+    - family: Oswald
+      source: google
+  
+  base: Roboto Slab
+  headings: Oswald
