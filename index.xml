@@ -10,7 +10,7 @@
 <atom:link href="https://srwis.github.io/personal_site/index.xml" rel="self" type="application/rss+xml"/>
 <description>Babbling about Bioinformatics</description>
 <generator>quarto-1.8.27</generator>
-<lastBuildDate>Wed, 11 Mar 2026 04:00:00 GMT</lastBuildDate>
+<lastBuildDate>Mon, 16 Mar 2026 04:00:00 GMT</lastBuildDate>
 <item>
   <title>Publications</title>
   <dc:creator>Sadie Wisotsky</dc:creator>
@@ -121,7 +121,7 @@ Most molecular evolutionary studies of natural selection maintain the decades-ol
 <li>🔵 <strong>Molecular Biology and Evolution</strong><br>
 <strong>Kosakovsky Pond, S. L., Wisotsky, S. R., Escalante, A., et al.&nbsp;(2020).</strong><br>
 <em>Contrast‑FEL: A test for differences in selective pressures at individual sites among clades.</em><br>
-https://doi.org/10.1093/molbev/msaa263</li>
+<a href="https://doi.org/10.1093/molbev/msaa263">https://doi.org/10.1093/molbev/msaa263</a></li>
 </ul>
 <details>
 <summary>
@@ -133,13 +133,13 @@ A number of evolutionary hypotheses can be tested by comparing selective pressur
 <li>🔵 <strong>Molecular Biology and Evolution</strong><br>
 <strong>Kosakovsky Pond, S. L., Poon, A. F. Y., Wisotsky, S. R., et al.&nbsp;(2020).</strong><br>
 <em>HyPhy 2.5 ‑ A Customizable Platform for Evolutionary Hypothesis Testing.</em><br>
-https://doi.org/10.1093/molbev/msz197</li>
+<a href="https://doi.org/10.1093/molbev/msz197">https://doi.org/10.1093/molbev/msz197</a></li>
 </ul>
 <details>
 <summary>
 <strong>Abstract</strong>
 </summary>
-HyPhy 2.5 is a phylogenetic software platform enabling flexible hypothesis testing via molecular evolutionary models.
+HYpothesis testing using PHYlogenies (HyPhy) is a scriptable, open-source package for fitting a broad range of evolutionary models to multiple sequence alignments, and for conducting subsequent parameter estimation and hypothesis testing, primarily in the maximum likelihood statistical framework. It has become a popular choice for characterizing various aspects of the evolutionary process: natural selection, evolutionary rates, recombination, and coevolution. The 2.5 release (available from www.hyphy.org) includes a completely re-engineered computational core and analysis library that introduces new classes of evolutionary models and statistical tests, delivers substantial performance and stability enhancements, improves usability, streamlines end-to-end analysis workflows, makes it easier to develop custom analyses, and is mostly backward compatible with previous HyPhy releases.
 </details>
 <hr>
 </section>
@@ -149,13 +149,13 @@ HyPhy 2.5 is a phylogenetic software platform enabling flexible hypothesis testi
 <li>🟡 <strong>Phytopathology</strong><br>
 <strong>Parker, J. K., Wisotsky, S. R., et al.&nbsp;(2014).</strong><br>
 <em>Viability of ‘Candidatus Liberibacter asiaticus’ prolonged by addition of citrus juice to culture medium.</em><br>
-https://doi.org/10.1094/PHYTO‑10‑13‑0264‑R</li>
+<a href="https://doi.org/10.1094/PHYTO-05-13-0119-R">https://doi.org/10.1094/PHYTO-05-13-0119-R</a></li>
 </ul>
 <details>
 <summary>
 <strong>Abstract</strong>
 </summary>
-Addition of citrus juice extended viability of the plant pathogen <em>Candidatus Liberibacter asiaticus</em>, improving culture conditions for experimental study.
+Huanglongbing, or citrus greening disease, is associated with infection by the phloem-limited bacterium ‘Candidatus Liberibacter asiaticus’. Infection with ‘Ca. L. asiaticus’ is incurable; therefore, knowledge regarding ‘Ca. L. asiaticus’ biology and pathogenesis is essential to develop a treatment. However, ‘Ca. L. asiaticus’ cannot currently be successfully cultured, limiting its study. To gain insight into the conditions conducive for growth of ‘Ca. L. asiaticus’ in vitro, ‘Ca. L. asiaticus’ inoculum obtained from seed of fruit from infected pomelo trees (Citrus maxima ‘Mato Buntan’) was added to different media, and cell viability was monitored for up to 2 months using quantitative polymerase chain reaction in conjunction with ethidium monoazide. Media tested included one-third King’s B (K), K with 50% juice from the infected fruit, K with 50% commercially available grapefruit juice, and 100% commercially available grapefruit juice. Results show that juice-containing media dramatically prolong viability compared with K in experiments reproduced during 2 years using different juice sources. Furthermore, biofilm formed at the air–liquid interface of juice cultures contained ‘Ca. L. asiaticus’ cells, though next-generation sequencing indicated that other bacterial genera were predominant. Chemical characterization of the media was conducted to discuss possible factors sustaining ‘Ca. L. asiaticus’ viability in vitro, which will contribute to future development of a culture medium for ‘Ca. L. asiaticus’.
 </details>
 <hr>
 </section>
@@ -163,14 +163,14 @@ Addition of citrus juice extended viability of the plant pathogen <em>Candidatus
 <section id="theses-dissertations" class="level2">
 <h2 class="anchored" data-anchor-id="theses-dissertations">Theses &amp; Dissertations</h2>
 <ul>
-<li>🎓 <strong>Wisotsky, S. R. (2019).</strong> <em>Statistical Methods and Genomic Data Analyses for Detecting Natural Selection.</em> Ph.D.&nbsp;Dissertation, North Carolina State University.<br>
+<li>🎓 <strong>Wisotsky, S. R. (2019).</strong> <em>Explorations of Site-to-Site Synonymous Substitution Rate Variability</em> Ph.D.&nbsp;Dissertation, North Carolina State University.<br>
 https://www.proquest.com/openview/d6709c9e0ac6a25b4547fe1937e80fc5/1?pq‑origsite=gscholar&amp;cbl=18750&amp;diss=y</li>
 </ul>
 <details>
 <summary>
 <strong>Abstract</strong>
 </summary>
-This dissertation develops statistical approaches for detecting natural selection in genomic datasets, focusing on model robustness and evolutionary inference techniques.
+Models of sequence substitution are used to accurately reflect the process of sequence evolution and the underlying biological mechanisms that drive it. Because of advancements in both computa- tional power and our biological understanding of evolutionary processes, new models that better reflect the truth have been proposed. My work focuses on modeling synonymous substitution rate variation across sites, or SRV. There is a growing body of literature that shows that synonymous substitutions can impact downstream products and experience selective pressures. However, most current models of sequence substitution assume a constant synonymous substitution rate across sites. Here I present my findings that show site to site synonymous rate variation is of an appreciable magnitude, is widespread throughout many genes and orders and that by not accounting for this phenomena in our molecular inferences mis-estimation of parameters is likely. First I introduce the basic concepts surrounding models of sequence evolution and rate variation. In my second chapter I analyze Metazoan mitochondrial DNA alignments to show that SRV is both widespread and of a comparable magnitude to that of the nonsynonymous rate variation. As an offshoot of this first project I also revived an unpublished result from Dr.&nbsp;Frank Mannino’s thesis that shows the number of rate categories used to estimate a discrete distribution results in an upper bound on the estimated variance as is discussed in Chapter 3. Finally, in collaboration with Dr.&nbsp;Sergei Kosakovsky Pond’s group at Temple University, we introduce a new method of gene-wide episodic selection detection that incorporates site to site variability of the synonymous substitution rate, BUSTED+SRV. We compare BUSTED+SRV to the previous method BUSTED using both empirical data from the Selectome database and data simulated using the BUSTED+SRV framework and find that BUSTED has a high false positive rate when SRV is present. The combination evidence of how widespread a phenomena SRV is as well as its magnitude and the high false positive rate of BUSTED suggests that other statistical inference assuming a constant synonymous rate from site to site could be similarly impacted
 </details>
 <hr>
 </section>
@@ -198,7 +198,7 @@ This dissertation develops statistical approaches for detecting natural selectio
   <category>publications</category>
   <category>bioinformatics</category>
   <guid>https://srwis.github.io/personal_site/posts/papers/</guid>
-  <pubDate>Wed, 11 Mar 2026 04:00:00 GMT</pubDate>
+  <pubDate>Mon, 16 Mar 2026 04:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Data Exploration App</title>
