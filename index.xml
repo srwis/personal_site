@@ -5,12 +5,12 @@
       xmlns:dc="http://purl.org/dc/elements/1.1/" 
       version="2.0">
 <channel>
-<title>Sadie Wisotsky: Bioinfomatician</title>
+<title>Biological Data Science</title>
 <link>https://srwis.github.io/personal_site/</link>
 <atom:link href="https://srwis.github.io/personal_site/index.xml" rel="self" type="application/rss+xml"/>
 <description>Babbling about Bioinformatics</description>
 <generator>quarto-1.8.27</generator>
-<lastBuildDate>Mon, 16 Mar 2026 04:00:00 GMT</lastBuildDate>
+<lastBuildDate>Sun, 15 Mar 2026 04:00:00 GMT</lastBuildDate>
 <item>
   <title>Publications</title>
   <dc:creator>Sadie Wisotsky</dc:creator>
@@ -198,7 +198,7 @@ Models of sequence substitution are used to accurately reflect the process of se
   <category>publications</category>
   <category>bioinformatics</category>
   <guid>https://srwis.github.io/personal_site/posts/papers/</guid>
-  <pubDate>Mon, 16 Mar 2026 04:00:00 GMT</pubDate>
+  <pubDate>Sun, 15 Mar 2026 04:00:00 GMT</pubDate>
 </item>
 <item>
   <title>Data Exploration App</title>
