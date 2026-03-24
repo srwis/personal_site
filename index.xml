@@ -210,13 +210,64 @@ Models of sequence substitution are used to accurately reflect the process of se
 
 
 
-<p>When I joined my previous group the main method of transferring data post analysis was simply to email Excel files back and forth as changes were made. This works fine as long as the data is small enough to fit in an Excel workbook with all its row and column limits and you don’t care about tracking the versioning of the data any deeper than tacking on dates at the end of the file names.</p>
-<p>For some of our analyses the size limits of Excel were already starting to become a problem. We’d have to find ways that made sense to break up the data and send it in multiple workbooks for downstream users to piece back together as they needed. Then I attended Posit::conf in 2024 and saw an incredible talk on an R package called <a href="https://pins.rstudio.com/">pins</a>.</p>
-<p>Pins became the missing piece in building a basic ETL (extract, transform, load) pipeling for a Shiny App that allowed downstream users to easily search for, preview, and filter the data they needed. I was able to clean data, perform requested anlayses on it and then upload it to a Sharepoint board.</p>
-<p>I decided to develope a Shiny app to make it easier for non-R users to access the data. The app allows a user to select the study they are interested in retrieving data for and using the pins metadata, displays descriptions of the data, including the column names, number of rows, and the date the data was last updated. It then allows users to decide what columns to include in the data and allows for additional filtering of the data by parameters before download as often times our users were only interested in a particular subset of the data.</p>
-<p>This elimated the need to email files back and forth and allowed Bioinformatics to better track the versioning of the data if/when additional samples or analyses were added.</p>
+<section id="replacing-excel-based-data-sharing-with-a-scalable-data-access-layer" class="level1">
+<h1>Replacing Excel-Based Data Sharing with a Scalable Data Access Layer</h1>
+<p>🖥️ Tech Stack: R (pins), Shiny, SharePoint</p>
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">Summary</h2>
+<p>When I joined the team, post-analysis data sharing relied on emailing Excel files back and forth.</p>
+<p>I replaced this with a lightweight data pipeline using R (pins) and a Shiny application, enabling users to search for, preview, filter, and download the data they needed, while improving how dataset versioning was tracked.</p>
+</section>
+<section id="the-starting-point" class="level2">
+<h2 class="anchored" data-anchor-id="the-starting-point">The Starting Point</h2>
+<p>Data was distributed via Excel files sent over email as updates were made.</p>
+<p>This approach worked only if:</p>
+<ul>
+<li>Data fit within Excel’s row and column limits</li>
+<li>Versioning was handled by appending dates to file names</li>
+</ul>
+<p>There was no deeper mechanism for tracking changes across datasets.</p>
+</section>
+<section id="scaling-constraints" class="level2">
+<h2 class="anchored" data-anchor-id="scaling-constraints">Scaling Constraints</h2>
+<p>As analyses grew:</p>
+<ul>
+<li>Some datasets approached or exceeded Excel limits</li>
+<li>Data had to be split across multiple workbooks</li>
+<li>Downstream users were responsible for recombining data</li>
+<li>Each update required additional coordination via email</li>
+</ul>
+</section>
+<section id="key-inflection-point" class="level2">
+<h2 class="anchored" data-anchor-id="key-inflection-point">Key Inflection Point</h2>
+<p>At Posit::conf (2024), I saw a talk on the R package <a href="https://pins.rstudio.com/reference/index.html">pins</a>.</p>
+<p>This provided a path to move from file-based data sharing to a more structured approach.</p>
+</section>
+<section id="system-design" class="level2">
+<h2 class="anchored" data-anchor-id="system-design">System Design</h2>
+<p>Data Pipeline (R + pins) * Cleaned data * Performed requested analyses * Uploaded datasets to a SharePoint board using pins</p>
+<p>Access Layer (Shiny Application) * Study selection * Dataset metadata (columns, rows, last updated) * Column selection * Parameter-based filtering * Subset download</p>
+</section>
+<section id="outcome" class="level2">
+<h2 class="anchored" data-anchor-id="outcome">Outcome</h2>
+<ul>
+<li>Eliminated the need to email Excel files back and forth</li>
+<li>Removed the need to split and recombine datasets across workbooks</li>
+<li>Enabled users to search for, preview, filter, and download relevant data</li>
+<li>Improved how Bioinformatics tracked versioning when new samples or analyses were added</li>
+</ul>
+</section>
+<section id="net-effect" class="level2">
+<h2 class="anchored" data-anchor-id="net-effect">Net effect:</h2>
+<ul>
+<li>File-based data exchange ➡️ structured data access</li>
+<li>Manual coordination ➡️ user-driven data retrieval</li>
+<li>Filename-based versioning ➡️ improved version tracking</li>
+</ul>
 
 
+</section>
+</section>
 
  ]]></description>
   <category>shiny</category>
