@@ -33,7 +33,6 @@
 <section id="section" class="level3">
 <h3 class="anchored" data-anchor-id="section">2026</h3>
 <ul>
-<li></li>
 <li><p>🧪 <strong>Cancer Immunology Research (AACR)</strong> <strong>Reuschel, E. L., Sylvester, A., Marcus, S., Wisotsky, S., Dolgoter, A., Reed, K. S., Tan, G. S., Skolnik, J. M., Gillespie, E. (2024).</strong> <em>Treatment of Recurrent Respiratory Papillomatosis with DNA immunotherapy INO-3107 induces activation and enrichment of pro-inflammatory CD4+ T cell responses in blood and airways of patients with clinical response</em> <a href="https://doi.org/10.1158/2326-6074.IO2026-A060">https://doi.org/10.1158/2326-6074.IO2026-A060</a></p>
 <details>
 <summary>
@@ -245,8 +244,20 @@ Models of sequence substitution are used to accurately reflect the process of se
 </section>
 <section id="system-design" class="level2">
 <h2 class="anchored" data-anchor-id="system-design">System Design</h2>
-<p>Data Pipeline (R + pins) * Cleaned data * Performed requested analyses * Uploaded datasets to a SharePoint board using pins</p>
-<p>Access Layer (Shiny Application) * Study selection * Dataset metadata (columns, rows, last updated) * Column selection * Parameter-based filtering * Subset download</p>
+<p>Data Pipeline (R + pins)</p>
+<ul>
+<li>Cleaned data</li>
+<li>Performed requested analyses</li>
+<li>Uploaded datasets to a SharePoint board using pins</li>
+</ul>
+<p>Access Layer (Shiny Application)</p>
+<ul>
+<li>Study selection</li>
+<li>Dataset metadata (columns, rows, last updated)</li>
+<li>Column selection</li>
+<li>Parameter-based filtering</li>
+<li>Subset download</li>
+</ul>
 </section>
 <section id="outcome" class="level2">
 <h2 class="anchored" data-anchor-id="outcome">Outcome</h2>
