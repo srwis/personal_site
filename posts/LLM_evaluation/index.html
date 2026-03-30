@@ -6,10 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Sadie Wisotsky">
-<meta name="dcterms.date" content="2025-03-25">
+<meta name="dcterms.date" content="2026-03-30">
+<meta name="description" content="How I built a secure, locally-hosted Shiny app using RAG and open-source LLMs to summarize research papers without compromising data privacy.">
 
-<title>LLM Evaluation – Biological Data Science</title>
+<title>Privacy-First AI: Benchmarking Local LLMs for Scientific Paper Summarization in R – Biological Data Science</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -21,6 +21,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -121,13 +156,18 @@ ul.task-list li input[type="checkbox"] {
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">LLM Evaluation</h1>
-                                <div class="quarto-categories">
-                <div class="quarto-category">shiny</div>
+      <h1 class="title">Privacy-First AI: Benchmarking Local LLMs for Scientific Paper Summarization in R</h1>
+                  <div>
+        <div class="description">
+          How I built a secure, locally-hosted Shiny app using RAG and open-source LLMs to summarize research papers without compromising data privacy.
+        </div>
+      </div>
+                          <div class="quarto-categories">
                 <div class="quarto-category">R</div>
-                <div class="quarto-category">LLM</div>
-                <div class="quarto-category">pharma</div>
-                <div class="quarto-category">chat bot</div>
+                <div class="quarto-category">Shiny</div>
+                <div class="quarto-category">LLMs</div>
+                <div class="quarto-category">Machine Learning</div>
+                <div class="quarto-category">Bioinformatics</div>
               </div>
                   </div>
   </div>
@@ -135,17 +175,11 @@ ul.task-list li input[type="checkbox"] {
   
   <div class="quarto-title-meta">
 
-      <div>
-      <div class="quarto-title-meta-heading">Author</div>
-      <div class="quarto-title-meta-contents">
-               <p>Sadie Wisotsky </p>
-            </div>
-    </div>
       
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">March 25, 2025</p>
+        <p class="date">March 30, 2026</p>
       </div>
     </div>
     
@@ -164,9 +198,133 @@ ul.task-list li input[type="checkbox"] {
 
 
 
-<p>coming soon</p>
+<section id="the-challenge-ai-summarization-behind-closed-doors" class="level1">
+<h1>The Challenge: AI Summarization Behind Closed Doors</h1>
+<p>With the explosion of open-source Large Language Models (LLMs), the barrier to entry for building automated summarization tools has plummeted. In translational sciences, where researchers are constantly inundated with new literature, a tool that can quickly summarize a paper or answer questions about its contents is incredibly valuable.</p>
+<p>However, at my previous organization, we faced a hard constraint common in the biotech and pharmaceutical industries: <em>strict data privacy.</em></p>
+<p>We needed a tool to process internal reports and external literature, but we could not share any information outside of the company’s network. This immediately ruled out API-driven solutions like OpenAI, Anthropic, or any implementation requiring external connections. The objective was clear: keep it simple, keep it local, and build an interface that researchers could easily use.</p>
+<section id="exploring-the-ecosystem" class="level2">
+<h2 class="anchored" data-anchor-id="exploring-the-ecosystem">Exploring the Ecosystem</h2>
+<p>When deciding how to tackle this, there were two distinct pathways:</p>
+<ol type="1">
+<li>Train an LLM entirely from scratch (computationally expensive and largely impractical for a prototype).</li>
+<li>Implement and potentially fine-tune a local version of an existing open-source LLM.</li>
+</ol>
+<p>I opted for the second route. Since my primary stack for this project was R, I spent time exploring the rapidly growing landscape of R-based LLM packages.</p>
+<p>While packages like ellmer and tidychatmodels provide fantastic tidyverse-aligned syntax, they largely rely on web APIs. I found heavier inspiration in Stephen Turner’s work on biorecap, which targets bioRxiv preprints using local models.</p>
+<p>Ultimately, the winning combination was pairing R and Shiny with Ollama. Ollama allows for seamless local LLM hosting, and the R package rollama provided the perfect bridge to call these local instances directly from my R environment without data ever leaving the machine.</p>
+</section>
+<section id="building-the-application" class="level2">
+<h2 class="anchored" data-anchor-id="building-the-application">Building the Application</h2>
+<p>The prototype took the form of an R Shiny application. The workflow was designed to be as frictionless as possible: a user uploads a scientific PDF, the app parses the text, and feeds it to the local LLM via Ollama.</p>
+<p>Here is a look at the core server logic handling the summarization and timing the response:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(shiny)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(pdftools)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rollama)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Core summarization function</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>sum.timer.fun <span class="ot">&lt;-</span> <span class="cf">function</span>(x){</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  pdf <span class="ot">&lt;-</span> input<span class="sc">$</span>pdfInput</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">req</span>(pdf)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  start.time <span class="ot">&lt;-</span> <span class="fu">Sys.time</span>()</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Calling the local model via rollama</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  sum <span class="ot">&lt;-</span> <span class="fu">query</span>(x, </span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>               <span class="at">output =</span> <span class="st">"text"</span>,</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>               <span class="at">model =</span> <span class="st">"granite3.2"</span>,</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>               <span class="at">model_params =</span> <span class="fu">list</span>(<span class="at">num_gpu =</span> <span class="dv">0</span>,</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">num_ctx =</span> <span class="fu">ctx</span>()) <span class="co"># Dynamic context window</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  end.time <span class="ot">&lt;-</span> <span class="fu">Sys.time</span>()</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>  time.taken <span class="ot">&lt;-</span> end.time <span class="sc">-</span> start.time</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">list</span>(</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>      <span class="at">sum =</span> sum,</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>      <span class="at">time.taken =</span> time.taken</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>To make the tool more dynamic, I also implemented basic Retrieval-Augmented Generation (RAG) methods. Users could query the document directly—for example, asking about the presence of a specific biomarker—and receive a context-aware answer from the uploaded text.</p>
+</section>
+<section id="benchmarking-the-memory-wall" class="level2">
+<h2 class="anchored" data-anchor-id="benchmarking-the-memory-wall">Benchmarking the “Memory Wall”</h2>
+<p>To keep costs minimal and determine the viability of this approach, I benchmarked several open-source models using the microbenchmark package. I tested models like IBM’s granite3.2, Meta’s llama3.1, and mistral:7b on varying text lengths (from 500 characters up to full papers).</p>
+<p>Here is an example of the benchmarking setup for a full paper analysis:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(microbenchmark)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Extracting text from a sample paper</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>txt <span class="ot">&lt;-</span> <span class="fu">pdf_text</span>(<span class="st">"RRP_paper.pdf"</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>txt_bind <span class="ot">&lt;-</span> <span class="fu">str_flatten</span>(txt)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Constructing the query</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>q_zs <span class="ot">&lt;-</span> <span class="fu">make_query</span>(</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">text =</span> txt_bind,</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">prompt =</span> <span class="st">"Summarize the paper in 5 simple sentences or less."</span>,</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">system =</span> <span class="st">"You summarize scientific papers in lay terms."</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Benchmarking the models</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>mbm_models_defaults <span class="ot">&lt;-</span> <span class="fu">microbenchmark</span>(</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  <span class="st">"granite3.2"</span> <span class="ot">=</span> { <span class="fu">query</span>(q_zs, <span class="at">output =</span> <span class="st">"text"</span>, <span class="at">model =</span> <span class="st">"granite3.2"</span>, <span class="at">model_params=</span> <span class="fu">list</span>()) },</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>  <span class="st">"llama3.1"</span>   <span class="ot">=</span> { <span class="fu">query</span>(q_zs, <span class="at">output =</span> <span class="st">"text"</span>, <span class="at">model =</span> <span class="st">"llama3.1"</span>, <span class="at">model_params=</span> <span class="fu">list</span>()) },</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>  <span class="st">"mistral:7b"</span> <span class="ot">=</span> { <span class="fu">query</span>(q_zs, <span class="at">output =</span> <span class="st">"text"</span>, <span class="at">model =</span> <span class="st">"mistral:7b"</span>, <span class="at">model_params=</span> <span class="fu">list</span>()) },</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">times =</span> <span class="dv">10</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(mbm_models_defaults)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>(Below: Violin plots showing the distribution of inference times across the tested models)</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="full pap plot-1.png" class="img-fluid figure-img"></p>
+<figcaption>Benchmark comparing model inference times on full paper</figcaption>
+</figure>
+</div>
+<p>When running smaller chunks of text (like 500 characters), the models performed reliably well.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="plot 500-1.png" class="img-fluid figure-img"></p>
+<figcaption>Benchmark comparing model inference times on 500 characters</figcaption>
+</figure>
+</div>
+</section>
+<section id="the-hardware-bottleneck" class="level2">
+<h2 class="anchored" data-anchor-id="the-hardware-bottleneck">The Hardware Bottleneck</h2>
+<p>This is where the physical limitations of current hardware became the primary bottleneck. Time-to-completion wasn’t just a factor of character count; it was heavily dependent on the chosen context window (num_ctx).</p>
+<p>During benchmarking, I ran into a fascinating infrastructure quirk: - I was able to run “full” benchmarking successfully on my local laptop. - However, when deploying to the server, anything larger than a “half-paper” crashed the process due to Out-Of-Memory (OOM) errors.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Increasing the context window drastically impacted memory usage</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>q_ctx_5000 <span class="ot">&lt;-</span> <span class="fu">make_query</span>(</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">text =</span> txt_bind,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">prompt =</span> <span class="st">"Summarize the paper in 5 simple sentences or less."</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">system =</span> <span class="st">"You summarize scientific papers in lay terms."</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>mbm_models_ctx_5000 <span class="ot">&lt;-</span> <span class="fu">microbenchmark</span>(</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">"granite3.2_ctx_5000"</span> <span class="ot">=</span> { <span class="fu">query</span>(q_ctx_5000, <span class="at">output =</span> <span class="st">"text"</span>, <span class="at">model =</span> <span class="st">"granite3.2"</span>, <span class="at">model_params=</span> <span class="fu">list</span>(<span class="at">num_ctx =</span> <span class="dv">5000</span>)) },</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"llama3.1_ctx_5000"</span>   <span class="ot">=</span> { <span class="fu">query</span>(q_ctx_5000, <span class="at">output =</span> <span class="st">"text"</span>, <span class="at">model =</span> <span class="st">"llama3.1"</span>, <span class="at">model_params=</span> <span class="fu">list</span>(<span class="at">num_ctx =</span> <span class="dv">5000</span>)) },</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">times =</span> <span class="dv">10</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="context 5000 plot-1.png" class="img-fluid figure-img"></p>
+<figcaption>Benchmark comparing model inference times with 5000 context window</figcaption>
+</figure>
+</div>
+<p>The server objectively had enough raw RAM, but local LLMs are highly dependent on VRAM and cache management during active generation. The context window requirements for processing full scientific papers simply overwhelmed the server’s available resources for caching the attention mechanisms.</p>
+</section>
+<section id="takeaways" class="level2">
+<h2 class="anchored" data-anchor-id="takeaways">Takeaways</h2>
+<p>Building this prototype proved that creating private, locally hosted AI tools for translational science is entirely feasible using R, Shiny, and open-source models. The privacy guarantees are absolute, and the R ecosystem is maturing rapidly to support these workflows.</p>
+<p>However, the hardware limitations are real. Open-source LLMs are incredibly capable, but processing large, dense scientific PDFs locally requires careful management of context windows and a solid understanding of the host machine’s memory architecture.</p>
+<p>As open-source models become more efficient and quantization techniques improve, this kind of local, secure architecture will likely become a standard tool in the data scientist’s kit.</p>
 
 
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

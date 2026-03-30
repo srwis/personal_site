@@ -10,7 +10,386 @@
 <atom:link href="https://srwis.github.io/personal_site/index.xml" rel="self" type="application/rss+xml"/>
 <description>Babbling about Bioinformatics</description>
 <generator>quarto-1.8.27</generator>
-<lastBuildDate>Sun, 15 Mar 2026 04:00:00 GMT</lastBuildDate>
+<lastBuildDate>Mon, 30 Mar 2026 04:00:00 GMT</lastBuildDate>
+<item>
+  <title>Privacy-First AI: Benchmarking Local LLMs for Scientific Paper Summarization in R</title>
+  <link>https://srwis.github.io/personal_site/posts/LLM_evaluation/</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<section id="the-challenge-ai-summarization-behind-closed-doors" class="level1">
+<h1>The Challenge: AI Summarization Behind Closed Doors</h1>
+<p>With the explosion of open-source Large Language Models (LLMs), the barrier to entry for building automated summarization tools has plummeted. In translational sciences, where researchers are constantly inundated with new literature, a tool that can quickly summarize a paper or answer questions about its contents is incredibly valuable.</p>
+<p>However, at my previous organization, we faced a hard constraint common in the biotech and pharmaceutical industries: <em>strict data privacy.</em></p>
+<p>We needed a tool to process internal reports and external literature, but we could not share any information outside of the company’s network. This immediately ruled out API-driven solutions like OpenAI, Anthropic, or any implementation requiring external connections. The objective was clear: keep it simple, keep it local, and build an interface that researchers could easily use.</p>
+<section id="exploring-the-ecosystem" class="level2">
+<h2 class="anchored" data-anchor-id="exploring-the-ecosystem">Exploring the Ecosystem</h2>
+<p>When deciding how to tackle this, there were two distinct pathways:</p>
+<ol type="1">
+<li>Train an LLM entirely from scratch (computationally expensive and largely impractical for a prototype).</li>
+<li>Implement and potentially fine-tune a local version of an existing open-source LLM.</li>
+</ol>
+<p>I opted for the second route. Since my primary stack for this project was R, I spent time exploring the rapidly growing landscape of R-based LLM packages.</p>
+<p>While packages like ellmer and tidychatmodels provide fantastic tidyverse-aligned syntax, they largely rely on web APIs. I found heavier inspiration in Stephen Turner’s work on biorecap, which targets bioRxiv preprints using local models.</p>
+<p>Ultimately, the winning combination was pairing R and Shiny with Ollama. Ollama allows for seamless local LLM hosting, and the R package rollama provided the perfect bridge to call these local instances directly from my R environment without data ever leaving the machine.</p>
+</section>
+<section id="building-the-application" class="level2">
+<h2 class="anchored" data-anchor-id="building-the-application">Building the Application</h2>
+<p>The prototype took the form of an R Shiny application. The workflow was designed to be as frictionless as possible: a user uploads a scientific PDF, the app parses the text, and feeds it to the local LLM via Ollama.</p>
+<p>Here is a look at the core server logic handling the summarization and timing the response:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"></span>
+<span id="cb1-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(shiny)</span>
+<span id="cb1-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(pdftools)</span>
+<span id="cb1-4"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(rollama)</span>
+<span id="cb1-5"></span>
+<span id="cb1-6"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Core summarization function</span></span>
+<span id="cb1-7">sum.timer.fun <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">function</span>(x){</span>
+<span id="cb1-8">  pdf <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> input<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>pdfInput</span>
+<span id="cb1-9">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">req</span>(pdf)</span>
+<span id="cb1-10">  start.time <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">Sys.time</span>()</span>
+<span id="cb1-11">  </span>
+<span id="cb1-12">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Calling the local model via rollama</span></span>
+<span id="cb1-13">  sum <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">query</span>(x, </span>
+<span id="cb1-14">               <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">output =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"text"</span>,</span>
+<span id="cb1-15">               <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">model =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"granite3.2"</span>,</span>
+<span id="cb1-16">               <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">model_params =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">num_gpu =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb1-17">                                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">num_ctx =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ctx</span>()) <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Dynamic context window</span></span>
+<span id="cb1-18">  )</span>
+<span id="cb1-19">  end.time <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">Sys.time</span>()</span>
+<span id="cb1-20">  time.taken <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> end.time <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> start.time</span>
+<span id="cb1-21">  </span>
+<span id="cb1-22">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">return</span>(</span>
+<span id="cb1-23">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list</span>(</span>
+<span id="cb1-24">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">sum =</span> sum,</span>
+<span id="cb1-25">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">time.taken =</span> time.taken</span>
+<span id="cb1-26">    )</span>
+<span id="cb1-27">  )</span>
+<span id="cb1-28">}</span></code></pre></div></div>
+<p>To make the tool more dynamic, I also implemented basic Retrieval-Augmented Generation (RAG) methods. Users could query the document directly—for example, asking about the presence of a specific biomarker—and receive a context-aware answer from the uploaded text.</p>
+</section>
+<section id="benchmarking-the-memory-wall" class="level2">
+<h2 class="anchored" data-anchor-id="benchmarking-the-memory-wall">Benchmarking the “Memory Wall”</h2>
+<p>To keep costs minimal and determine the viability of this approach, I benchmarked several open-source models using the microbenchmark package. I tested models like IBM’s granite3.2, Meta’s llama3.1, and mistral:7b on varying text lengths (from 500 characters up to full papers).</p>
+<p>Here is an example of the benchmarking setup for a full paper analysis:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"></span>
+<span id="cb2-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(tidyverse)</span>
+<span id="cb2-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(microbenchmark)</span>
+<span id="cb2-4"></span>
+<span id="cb2-5"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Extracting text from a sample paper</span></span>
+<span id="cb2-6">txt <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pdf_text</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"RRP_paper.pdf"</span>)</span>
+<span id="cb2-7">txt_bind <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str_flatten</span>(txt)</span>
+<span id="cb2-8"></span>
+<span id="cb2-9"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Constructing the query</span></span>
+<span id="cb2-10">q_zs <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">make_query</span>(</span>
+<span id="cb2-11">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">text =</span> txt_bind,</span>
+<span id="cb2-12">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">prompt =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Summarize the paper in 5 simple sentences or less."</span>,</span>
+<span id="cb2-13">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">system =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"You summarize scientific papers in lay terms."</span></span>
+<span id="cb2-14">)</span>
+<span id="cb2-15"></span>
+<span id="cb2-16"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Benchmarking the models</span></span>
+<span id="cb2-17">mbm_models_defaults <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">microbenchmark</span>(</span>
+<span id="cb2-18">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"granite3.2"</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">=</span> { <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">query</span>(q_zs, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">output =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"text"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">model =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"granite3.2"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">model_params=</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list</span>()) },</span>
+<span id="cb2-19">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"llama3.1"</span>   <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">=</span> { <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">query</span>(q_zs, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">output =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"text"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">model =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"llama3.1"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">model_params=</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list</span>()) },</span>
+<span id="cb2-20">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"mistral:7b"</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">=</span> { <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">query</span>(q_zs, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">output =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"text"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">model =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"mistral:7b"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">model_params=</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list</span>()) },</span>
+<span id="cb2-21">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">times =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span></span>
+<span id="cb2-22">)</span>
+<span id="cb2-23"></span>
+<span id="cb2-24"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">autoplot</span>(mbm_models_defaults)</span></code></pre></div></div>
+<p>(Below: Violin plots showing the distribution of inference times across the tested models)</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://srwis.github.io/personal_site/posts/LLM_evaluation/full pap plot-1.png" class="img-fluid figure-img"></p>
+<figcaption>Benchmark comparing model inference times on full paper</figcaption>
+</figure>
+</div>
+<p>When running smaller chunks of text (like 500 characters), the models performed reliably well.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://srwis.github.io/personal_site/posts/LLM_evaluation/plot 500-1.png" class="img-fluid figure-img"></p>
+<figcaption>Benchmark comparing model inference times on 500 characters</figcaption>
+</figure>
+</div>
+</section>
+<section id="the-hardware-bottleneck" class="level2">
+<h2 class="anchored" data-anchor-id="the-hardware-bottleneck">The Hardware Bottleneck</h2>
+<p>This is where the physical limitations of current hardware became the primary bottleneck. Time-to-completion wasn’t just a factor of character count; it was heavily dependent on the chosen context window (num_ctx).</p>
+<p>During benchmarking, I ran into a fascinating infrastructure quirk: - I was able to run “full” benchmarking successfully on my local laptop. - However, when deploying to the server, anything larger than a “half-paper” crashed the process due to Out-Of-Memory (OOM) errors.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"></span>
+<span id="cb3-2"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Increasing the context window drastically impacted memory usage</span></span>
+<span id="cb3-3">q_ctx_5000 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">make_query</span>(</span>
+<span id="cb3-4">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">text =</span> txt_bind,</span>
+<span id="cb3-5">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">prompt =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Summarize the paper in 5 simple sentences or less."</span>,</span>
+<span id="cb3-6">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">system =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"You summarize scientific papers in lay terms."</span></span>
+<span id="cb3-7">)</span>
+<span id="cb3-8"></span>
+<span id="cb3-9">mbm_models_ctx_5000 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">microbenchmark</span>(</span>
+<span id="cb3-10">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"granite3.2_ctx_5000"</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">=</span> { <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">query</span>(q_ctx_5000, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">output =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"text"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">model =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"granite3.2"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">model_params=</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">num_ctx =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5000</span>)) },</span>
+<span id="cb3-11">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"llama3.1_ctx_5000"</span>   <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">=</span> { <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">query</span>(q_ctx_5000, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">output =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"text"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">model =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"llama3.1"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">model_params=</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">num_ctx =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5000</span>)) },</span>
+<span id="cb3-12">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">times =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span></span>
+<span id="cb3-13">)</span></code></pre></div></div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://srwis.github.io/personal_site/posts/LLM_evaluation/context 5000 plot-1.png" class="img-fluid figure-img"></p>
+<figcaption>Benchmark comparing model inference times with 5000 context window</figcaption>
+</figure>
+</div>
+<p>The server objectively had enough raw RAM, but local LLMs are highly dependent on VRAM and cache management during active generation. The context window requirements for processing full scientific papers simply overwhelmed the server’s available resources for caching the attention mechanisms.</p>
+</section>
+<section id="takeaways" class="level2">
+<h2 class="anchored" data-anchor-id="takeaways">Takeaways</h2>
+<p>Building this prototype proved that creating private, locally hosted AI tools for translational science is entirely feasible using R, Shiny, and open-source models. The privacy guarantees are absolute, and the R ecosystem is maturing rapidly to support these workflows.</p>
+<p>However, the hardware limitations are real. Open-source LLMs are incredibly capable, but processing large, dense scientific PDFs locally requires careful management of context windows and a solid understanding of the host machine’s memory architecture.</p>
+<p>As open-source models become more efficient and quantization techniques improve, this kind of local, secure architecture will likely become a standard tool in the data scientist’s kit.</p>
+
+
+</section>
+</section>
+
+ ]]></description>
+  <category>R</category>
+  <category>Shiny</category>
+  <category>LLMs</category>
+  <category>Machine Learning</category>
+  <category>Bioinformatics</category>
+  <guid>https://srwis.github.io/personal_site/posts/LLM_evaluation/</guid>
+  <pubDate>Mon, 30 Mar 2026 04:00:00 GMT</pubDate>
+</item>
 <item>
   <title>Publications</title>
   <dc:creator>Sadie Wisotsky</dc:creator>
@@ -706,29 +1085,6 @@ font-style: inherit;">unlist</span>()</span>
  ]]></description>
   <guid>https://srwis.github.io/personal_site/posts/pins_tut/</guid>
   <pubDate>Mon, 29 Sep 2025 04:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>LLM Evaluation</title>
-  <dc:creator>Sadie Wisotsky</dc:creator>
-  <link>https://srwis.github.io/personal_site/posts/LLM_evaluation/</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<p>coming soon</p>
-
-
-
- ]]></description>
-  <category>shiny</category>
-  <category>R</category>
-  <category>LLM</category>
-  <category>pharma</category>
-  <category>chat bot</category>
-  <guid>https://srwis.github.io/personal_site/posts/LLM_evaluation/</guid>
-  <pubDate>Tue, 25 Mar 2025 04:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>
