@@ -4,13 +4,68 @@ author: "Sadie Wisotsky"
 date: "2026-02-28"
 categories: [shiny, R, data exploration, pharma, pins, ETL]
 ---
-When I joined my previous group the main method of transferring data post analysis was simply to email Excel files back and forth as changes were made. This works fine as long as the data is small enough to fit in an Excel workbook with all its row and column limits and you don't care about tracking the versioning of the data any deeper than tacking on dates at the end of the file names.
+# Replacing Excel-Based Data Sharing with a Scalable Data Access Layer
 
-For some of our analyses the size limits of Excel were already starting to become a problem. We'd have to find ways that made sense to break up the data and send it in multiple workbooks for downstream users to piece back together as they needed. Then I attended Posit::conf in 2024 and saw an incredible talk on an R package called [pins](https://pins.rstudio.com/).
+🖥️ Tech Stack: R (pins), Shiny, SharePoint
 
-Pins became the missing piece in building a basic ETL (extract, transform, load) pipeling for a Shiny App that allowed downstream users to easily search for, preview, and filter the data they needed. I was able to clean data, perform requested anlayses on it and then upload it to a Sharepoint board. 
+## Summary
 
-I decided to develope a Shiny app to make it easier for non-R users to access the data. The app allows a user to select the study they are interested in retrieving data for and using the pins metadata, displays descriptions of the data, including the column names, number of rows, and the date the data was last updated. It then allows users to decide what columns to include in the data and allows for additional filtering of the data by parameters before download as often times our users were only interested in a particular subset of the data. 
+When I joined the team, post-analysis data sharing relied on emailing Excel files back and forth.
 
-This elimated the need to email files back and forth and allowed Bioinformatics to better track the versioning of the data if/when additional samples or analyses were added. 
+I replaced this with a lightweight data pipeline using R (pins) and a Shiny application, enabling users to search for, preview, filter, and download the data they needed, while improving how dataset versioning was tracked.
 
+## The Starting Point
+
+Data was distributed via Excel files sent over email as updates were made.
+
+This approach worked only if:
+
+* Data fit within Excel’s row and column limits
+* Versioning was handled by appending dates to file names
+
+There was no deeper mechanism for tracking changes across datasets.
+
+
+## Scaling Constraints
+
+As analyses grew:
+
+*	Some datasets approached or exceeded Excel limits
+*	Data had to be split across multiple workbooks
+*	Downstream users were responsible for recombining data
+*	Each update required additional coordination via email
+
+## Key Inflection Point
+
+At Posit::conf (2024), I saw a talk on the R package [pins](https://pins.rstudio.com/reference/index.html).
+
+This provided a path to move from file-based data sharing to a more structured approach.
+
+
+## System Design
+
+Data Pipeline (R + pins)
+
+*	Cleaned data
+*	Performed requested analyses
+*	Uploaded datasets to a SharePoint board using pins
+
+Access Layer (Shiny Application)
+
+*	Study selection
+*	Dataset metadata (columns, rows, last updated)
+*	Column selection
+*   Parameter-based filtering
+*	Subset download
+
+
+## Outcome
+*	Eliminated the need to email Excel files back and forth
+*	Removed the need to split and recombine datasets across workbooks
+*	Enabled users to search for, preview, filter, and download relevant data
+*	Improved how Bioinformatics tracked versioning when new samples or analyses were added
+
+## Net effect:
+*	File-based data exchange ➡️ structured data access
+*	Manual coordination ➡️ user-driven data retrieval
+*	Filename-based versioning ➡️ improved version tracking

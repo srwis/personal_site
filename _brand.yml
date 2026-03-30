@@ -5,14 +5,14 @@ meta:
   link:
     home: https://www.example.com # INSTRUCTION: Replace with your home page URL
 
-logo:
-  images: 
+#logo:
+ # images: 
     # INSTRUCTION: Download your brand's logo files and place them in a 'logos' directory next to this file.
-    header: logos/header-logo.png
-    full: logos/full-logo.svg
-  medium: 
-    light: header 
-  large: full 
+    #header: logos/header-logo.png
+    #full: logos/full-logo.svg
+  #medium: 
+    #light: header 
+  #large: full 
 
 color:
   palette:

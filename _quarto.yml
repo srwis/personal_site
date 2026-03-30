@@ -4,7 +4,7 @@ project:
 website:
   description: "Babbling about Bioinformatics"
   #site-url: srwis.github.io/personal_site # you must change this appropriately for RSS feeds to work properly
-  title: "Sadie Wisotsky: Bioinfomatician"
+  title: "Biological Data Science"
   navbar:
     right:
       - about.qmd

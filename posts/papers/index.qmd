@@ -1,7 +1,7 @@
 ---
 title: "Publications"
 author: "Sadie Wisotsky"
-date: today
+date: "2026-03-15"
 categories: [research, publications, bioinformatics]
 format:
   html:
@@ -18,7 +18,6 @@ format:
 
 ### 2026
 
-- 
 
 - 🧪 **Cancer Immunology Research (AACR)** 
   **Reuschel, E. L., Sylvester, A., Marcus, S., Wisotsky, S., Dolgoter, A., Reed, K. S., Tan, G. S., Skolnik, J. M., Gillespie, E. (2024).** 
