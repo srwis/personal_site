@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/nwsl_goals/nwsl_data.html",
       "/posts/LLM_evaluation/index.html",
       "/posts/papers/index.html",
       "/posts/data_exploration/index.html",
