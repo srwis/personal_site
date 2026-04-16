@@ -10,7 +10,985 @@
 <atom:link href="https://srwis.github.io/personal_site/index.xml" rel="self" type="application/rss+xml"/>
 <description>Babbling about Bioinformatics</description>
 <generator>quarto-1.8.27</generator>
-<lastBuildDate>Mon, 30 Mar 2026 04:00:00 GMT</lastBuildDate>
+<lastBuildDate>Sun, 12 Apr 2026 04:00:00 GMT</lastBuildDate>
+<item>
+  <title>Predicting NWSL Goals with PyMC and BART</title>
+  <dc:creator>Sadie Wisotsky</dc:creator>
+  <link>https://srwis.github.io/personal_site/posts/nwsl_goals/nwsl_data.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<section id="predicting-nwsl-goals-with-pymc-and-bart" class="level1">
+<h1>Predicting NWSL Goals with PyMC and BART</h1>
+<p>I want to explore using PyMC, and Bayesian Additive Regression Trees (BART) to predict goals for the 2025 NWSL per team and see how close the predictions can get for that season. If you haven’t used BART before, it is fantastic for sports analytics. It natively figures out complex, non-linear relationships between variables so you don’t have to spend hours manually engineering them.</p>
+<div id="cba7da26" class="cell" data-execution_count="68">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> pandas <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> pd</span>
+<span id="cb1-2"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> numpy <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> np</span>
+<span id="cb1-3"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> pymc <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> pm</span>
+<span id="cb1-4"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> pymc_bart <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> pmb</span>
+<span id="cb1-5"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> arviz <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> az</span>
+<span id="cb1-6"></span>
+<span id="cb1-7">RANDOM_SEED <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">139</span></span></code></pre></div></div>
+</details>
+</div>
+<section id="prepping-the-data" class="level3">
+<h3 class="anchored" data-anchor-id="prepping-the-data">1. Prepping the data</h3>
+<p>We are working with a dataset of historical NWSL match stats from kaggle see <a href="https://www.kaggle.com/datasets/natoshakennebrew/nwsl-team-stats/data">here</a>, and our target is <code>gf</code> (Goals For).</p>
+<p>The biggest trap in sports forecasting is data leakage. If we want to predict a game that hasn’t happened yet, we absolutely cannot use post-game stats like expected goals (xG), total shots, or possession. Before kickoff, we only know a few things: the teams playing, the venue, the round, and the day of the week.</p>
+<p>Here is how we load the data and convert those categories into numbers the model can actually read.</p>
+<div id="def24fe7" class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"></span>
+<span id="cb2-2"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Load the raw data and save the original names for later</span></span>
+<span id="cb2-3">raw_df <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pd.read_csv(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"shooting.csv"</span>).dropna().copy()</span>
+<span id="cb2-4">team_mapping <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">dict</span>(<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">enumerate</span>(raw_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'team'</span>].astype(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'category'</span>).cat.categories))</span>
+<span id="cb2-5">opp_mapping <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">dict</span>(<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">enumerate</span>(raw_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'opp'</span>].astype(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'category'</span>).cat.categories))</span>
+<span id="cb2-6"></span>
+<span id="cb2-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Swap the text categories for integer codes</span></span>
+<span id="cb2-8">df <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> raw_df.copy()</span>
+<span id="cb2-9">cat_cols <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> [<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'team'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'opp'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'venue'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'round'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'day'</span>]</span>
+<span id="cb2-10">df[cat_cols] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> df[cat_cols].<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">apply</span>(<span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">lambda</span> x: x.astype(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'category'</span>).cat.codes)</span>
+<span id="cb2-11"></span></code></pre></div></div>
+</details>
+</div>
+<div id="5cbc2f4e" class="cell" data-execution_count="70">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># how many seasons are we working with</span></span>
+<span id="cb3-2">df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'season'</span>].unique()</span></code></pre></div></div>
+</details>
+<div class="cell-output cell-output-display">
+<pre><code>array([2025, 2024, 2023, 2021, 2019])</code></pre>
+</div>
+</div>
+<div id="1298048f" class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Split the data into training (historical) and testing (2025)</span></span>
+<span id="cb5-2">train_df <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> df[df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'season'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2025</span>].copy()</span>
+<span id="cb5-3">infer_df <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> df[df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'season'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2025</span>].copy()</span>
+<span id="cb5-4"></span>
+<span id="cb5-5"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Clean up the target variable and drop any missing games</span></span>
+<span id="cb5-6">train_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'gf'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pd.to_numeric(train_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'gf'</span>], errors<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'coerce'</span>)</span>
+<span id="cb5-7">train_df <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> train_df.dropna(subset<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'gf'</span>])</span>
+<span id="cb5-8">train_target <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> train_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"gf"</span>].astype(<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">int</span>)</span>
+<span id="cb5-9"></span>
+<span id="cb5-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Grab just the pre-match features</span></span>
+<span id="cb5-11">train_features <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> train_df[cat_cols].fillna(<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)</span>
+<span id="cb5-12">infer_features <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> infer_df[cat_cols].fillna(<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)</span></code></pre></div></div>
+</details>
+</div>
+<p>define bart. use a poisson distribution for goal scored because that is the most commonly used one for soccer goals and goals have to be integers. You can’t score 1.7 goals.</p>
+<div id="54058fd4" class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">with</span> pm.Model() <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> nwsl_gf_model:</span>
+<span id="cb6-2">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Register our data so we can update it later</span></span>
+<span id="cb6-3">    X_data <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pm.Data(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"X_data"</span>, train_features)</span>
+<span id="cb6-4">    y_data <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pm.Data(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"y_data"</span>, train_target)</span>
+<span id="cb6-5">    </span>
+<span id="cb6-6">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Set up the BART model with 50 trees</span></span>
+<span id="cb6-7">    mu_bart <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pmb.BART(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"mu_bart"</span>, X_data, y_data, m<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">50</span>)</span>
+<span id="cb6-8">    </span>
+<span id="cb6-9">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Use an exponential link function to keep the Poisson rate positive</span></span>
+<span id="cb6-10">    lam <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pm.math.exp(mu_bart)</span>
+<span id="cb6-11">    </span>
+<span id="cb6-12">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Likelihood</span></span>
+<span id="cb6-13">    y_obs <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pm.Poisson(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'y_obs'</span>, mu<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>lam, observed<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>y_data)</span>
+<span id="cb6-14">    </span>
+<span id="cb6-15">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Run the sampler</span></span>
+<span id="cb6-16">    trace_nwsl <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pm.sample(random_seed<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>RANDOM_SEED,quiet<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>, progressbar<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">False</span>)</span></code></pre></div></div>
+</details>
+</div>
+<p>check some plots and convergence of the MCMC chains</p>
+<div id="042c0124" class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> arviz_plots <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> azp</span>
+<span id="cb7-2"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> matplotlib.pyplot <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> plt</span>
+<span id="cb7-3"></span>
+<span id="cb7-4">az.plot_trace(trace_nwsl)</span>
+<span id="cb7-5">plt.tight_layout()</span>
+<span id="cb7-6">plt.show()</span></code></pre></div></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://srwis.github.io/personal_site/posts/nwsl_goals/nwsl_data_files/figure-html/cell-7-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>then look at summary statistics. Want an r hat close to 1 or 1.01 for most of these</p>
+<div id="768ce6b3" class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Generate a statistical summary of the trace</span></span>
+<span id="cb8-2">summary_df <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> az.summary(trace_gf_nwsl)</span>
+<span id="cb8-3"></span>
+<span id="cb8-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Display the key convergence columns</span></span>
+<span id="cb8-5"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(summary_df[[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'mean'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'sd'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'hdi_3%'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'hdi_97%'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'r_hat'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'ess_bulk'</span>]])</span></code></pre></div></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>                mean     sd  hdi_3%  hdi_97%  r_hat  ess_bulk
+mu_bart[0]    -1.923  0.324  -2.564   -1.332   1.01     530.0
+mu_bart[1]    -0.621  0.262  -1.113   -0.120   1.00     574.0
+mu_bart[2]     0.680  0.160   0.364    0.962   1.00     563.0
+mu_bart[3]    -2.173  0.288  -2.726   -1.649   1.01     469.0
+mu_bart[4]     0.763  0.183   0.410    1.105   1.01     621.0
+...              ...    ...     ...      ...    ...       ...
+mu_bart[1062]  0.140  0.204  -0.250    0.498   1.00     536.0
+mu_bart[1063] -2.266  0.266  -2.740   -1.735   1.00     716.0
+mu_bart[1064]  0.606  0.193   0.258    0.968   1.01     627.0
+mu_bart[1065]  1.087  0.168   0.787    1.421   1.00     582.0
+mu_bart[1066] -2.350  0.361  -3.045   -1.722   1.00     385.0
+
+[1067 rows x 6 columns]</code></pre>
+</div>
+</div>
+<p>looking for uniform chains. spikes to right or left indicate poor convergence and that that chain got caught up in parameter space.</p>
+<div id="11086f93" class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Generate a rank plot</span></span>
+<span id="cb10-2">az.plot_rank(trace_nwsl, </span>
+<span id="cb10-3">              coords <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> {<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"mu_bart_dim_0"</span>: [<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span>]})</span>
+<span id="cb10-4">plt.tight_layout()</span>
+<span id="cb10-5">plt.show()</span></code></pre></div></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://srwis.github.io/personal_site/posts/nwsl_goals/nwsl_data_files/figure-html/cell-9-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="2519bc61" class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Plot the marginal effects</span></span>
+<span id="cb11-2"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Note: smooth=False stops the plotter from breaking on discrete categories</span></span>
+<span id="cb11-3">pmb.plot_pdp(</span>
+<span id="cb11-4">    mu_bart, </span>
+<span id="cb11-5">    X<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>train_features, </span>
+<span id="cb11-6">    Y<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>train_target, </span>
+<span id="cb11-7">    func<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>np.exp,</span>
+<span id="cb11-8">    var_discrete<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span>],</span>
+<span id="cb11-9">    smooth<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">False</span></span>
+<span id="cb11-10">)</span>
+<span id="cb11-11">plt.tight_layout()</span>
+<span id="cb11-12">plt.show()</span></code></pre></div></div>
+</details>
+</div>
+<div id="c169693b" class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Check which features matter most</span></span>
+<span id="cb12-2">vi_results <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pmb.compute_variable_importance(trace_nwsl, mu_bart, train_features)</span>
+<span id="cb12-3">pmb.plot_variable_importance(vi_results)</span>
+<span id="cb12-4">plt.show()</span></code></pre></div></div>
+</details>
+<div class="cell-output cell-output-display">
+<pre><code>array([&lt;Axes: xlabel='season'&gt;, &lt;Axes: xlabel='team'&gt;, &lt;Axes: xlabel='round'&gt;, &lt;Axes: xlabel='day'&gt;,
+       &lt;Axes: xlabel='venue'&gt;, &lt;Axes: xlabel='opp'&gt;, &lt;Axes: xlabel='tm_std_Gls'&gt;, &lt;Axes: xlabel='tm_std_Sh'&gt;,
+       &lt;Axes: xlabel='tm_std_SoT'&gt;, &lt;Axes: xlabel='tm_std_Sot%'&gt;, &lt;Axes: xlabel='tm_std_G_Sh'&gt;,
+       &lt;Axes: xlabel='tm_std_G_SoT'&gt;, &lt;Axes: xlabel='tm_std_Dist'&gt;, &lt;Axes: xlabel='tm_std_FK'&gt;,
+       &lt;Axes: xlabel='tm_std_PK'&gt;, &lt;Axes: xlabel='tm_std_PKatt'&gt;, &lt;Axes: xlabel='tm_exp_xG'&gt;,
+       &lt;Axes: xlabel='tm_exp_npxG'&gt;, &lt;Axes: xlabel='tm_exp_npxG_Sh'&gt;, &lt;Axes: xlabel='tm_exp_G_xG'&gt;,
+       &lt;Axes: xlabel='tm_exp_np_G_xG'&gt;, &lt;Axes: xlabel='opp_std_Gls'&gt;, &lt;Axes: xlabel='opp_std_Sh'&gt;,
+       &lt;Axes: xlabel='opp_std_SoT'&gt;, &lt;Axes: xlabel='opp_std_Sot%'&gt;, &lt;Axes: xlabel='opp_std_G_Sh'&gt;,
+       &lt;Axes: xlabel='opp_std_G_SoT'&gt;, &lt;Axes: xlabel='opp_std_Dist'&gt;, &lt;Axes: xlabel='opp_std_FK'&gt;,
+       &lt;Axes: xlabel='opp_std_PK'&gt;, &lt;Axes: xlabel='opp_std_PKatt'&gt;, &lt;Axes: xlabel='opp_exp_xG'&gt;,
+       &lt;Axes: xlabel='opp_exp_npxG'&gt;, &lt;Axes: xlabel='opp_exp_npxG_Sh'&gt;, &lt;Axes: xlabel='opp_exp_G_xG'&gt;,
+       &lt;Axes: xlabel='opp_exp_np_G_xG'&gt;], dtype=object)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://srwis.github.io/personal_site/posts/nwsl_goals/nwsl_data_files/figure-html/cell-11-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="1ce5ba97" class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">with</span> nwsl_gf_model:</span>
+<span id="cb14-2">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Make a dummy array of zeros to match the 2025 game count</span></span>
+<span id="cb14-3">    dummy_target <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> np.zeros(<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">len</span>(infer_features), dtype<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">int</span>)</span>
+<span id="cb14-4">    </span>
+<span id="cb14-5">    pm.set_data({</span>
+<span id="cb14-6">        <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"X_data"</span>: infer_features,</span>
+<span id="cb14-7">        <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"y_data"</span>: dummy_target</span>
+<span id="cb14-8">    })</span>
+<span id="cb14-9">    </span>
+<span id="cb14-10">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Generate the 2025 predictions</span></span>
+<span id="cb14-11">    predictions_2025 <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pm.sample_posterior_predictive(</span>
+<span id="cb14-12">        trace<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>trace_nwsl, </span>
+<span id="cb14-13">        random_seed<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>RANDOM_SEED,</span>
+<span id="cb14-14">        progressbar<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">False</span></span>
+<span id="cb14-15">    )</span>
+<span id="cb14-16"></span>
+<span id="cb14-17"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Get the average predicted goals across all our MCMC draws</span></span>
+<span id="cb14-18">gf_2025_expected <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> predictions_2025.posterior_predictive[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"y_obs"</span>].mean(dim<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"chain"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"draw"</span>])</span>
+<span id="cb14-19"></span>
+<span id="cb14-20"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Add the predictions to our dataframe</span></span>
+<span id="cb14-21">infer_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'predicted_gf'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> gf_2025_expected.values</span>
+<span id="cb14-22">infer_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'actual_gf'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pd.to_numeric(infer_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'gf'</span>], errors<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'coerce'</span>)</span>
+<span id="cb14-23"></span>
+<span id="cb14-24"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Map the numbers back to the real team names so we can read it</span></span>
+<span id="cb14-25">eval_df <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> infer_df.dropna(subset<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'actual_gf'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'predicted_gf'</span>]).copy()</span>
+<span id="cb14-26">eval_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'team'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> eval_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'team'</span>].<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">map</span>(team_mapping)</span>
+<span id="cb14-27">eval_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'opp'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> eval_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'opp'</span>].<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">map</span>(opp_mapping)</span></code></pre></div></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<div class="ansi-escaped-output">
+<pre>Sampling: [mu_bart, y_obs]
+
+Sampling ... <span style="color:rgb(23,100,244)">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-magenta-fg">100%</span> 0:00:00 / 0:00:11 0:00:01 / 0:00:1100:01 / 0:00:11
+
+</pre>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    season  team  opp  predicted_gf
+0     2025     0   16       1.35000
+1     2025     0   15       1.21625
+2     2025     0   11       1.54425
+3     2025     0    5       1.26125
+5     2025     0    9       1.22450
+6     2025     0   14       1.23950
+7     2025     0   12       1.40850
+8     2025     0    1       1.35150
+9     2025     0    8       1.45350
+10    2025     0    2       1.45475
+11    2025     0    3       1.38300
+12    2025     0    4       1.17575
+13    2025     1   12       1.36900
+14    2025     1    8       1.45450
+15    2025     1   14       1.22275</code></pre>
+</div>
+</div>
+<div id="72b2b37e" class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Calculate basic game-by-game error</span></span>
+<span id="cb16-2">eval_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'error'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> eval_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'predicted_gf'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> eval_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'actual_gf'</span>]</span>
+<span id="cb16-3">eval_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'abs_error'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> np.<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">abs</span>(eval_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'error'</span>])</span>
+<span id="cb16-4"></span>
+<span id="cb16-5">mae <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> eval_df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'abs_error'</span>].mean()</span>
+<span id="cb16-6"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(<span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">f"Mean Absolute Error (MAE): </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>mae<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:.2f}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> goals per game"</span>)</span>
+<span id="cb16-7"></span>
+<span id="cb16-8"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Add up the total goals per team</span></span>
+<span id="cb16-9">team_totals <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> eval_df.groupby(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'team'</span>).agg(</span>
+<span id="cb16-10">    Total_Actual_GF<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'actual_gf'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'sum'</span>),</span>
+<span id="cb16-11">    Total_Predicted_GF<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'predicted_gf'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'sum'</span>)</span>
+<span id="cb16-12">).reset_index()</span>
+<span id="cb16-13"></span>
+<span id="cb16-14">team_totals <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> team_totals.sort_values(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Total_Actual_GF'</span>, ascending<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>)</span>
+<span id="cb16-15"></span>
+<span id="cb16-16"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Plot the real season totals vs our model's totals</span></span>
+<span id="cb16-17">fig, ax <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> plt.subplots(figsize<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">6</span>))</span>
+<span id="cb16-18">y_positions <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> np.arange(<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">len</span>(team_totals))</span>
+<span id="cb16-19">bar_height <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.35</span></span>
+<span id="cb16-20"></span>
+<span id="cb16-21">ax.barh(y_positions <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> bar_height<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>, team_totals[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Total_Actual_GF'</span>], </span>
+<span id="cb16-22">        height<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>bar_height, label<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Actual 2025 Goals'</span>, color<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'royalblue'</span>)</span>
+<span id="cb16-23">ax.barh(y_positions <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> bar_height<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>, team_totals[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Total_Predicted_GF'</span>], </span>
+<span id="cb16-24">        height<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>bar_height, label<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Predicted 2025 Goals'</span>, color<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'darkorange'</span>)</span>
+<span id="cb16-25"></span>
+<span id="cb16-26">ax.set_yticks(y_positions)</span>
+<span id="cb16-27">ax.set_yticklabels(team_totals[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'team'</span>])</span>
+<span id="cb16-28">ax.set_xlabel(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Total Goals For (GF)'</span>)</span>
+<span id="cb16-29">ax.set_title(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'NWSL 2025: Actual vs Predicted Goals by Team'</span>)</span>
+<span id="cb16-30">ax.legend()</span>
+<span id="cb16-31"></span>
+<span id="cb16-32">plt.tight_layout()</span>
+<span id="cb16-33">plt.show()</span></code></pre></div></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>--- 2025 Match-by-Match Prediction Accuracy ---
+Mean Absolute Error (MAE): 0.95 goals per game
+Root Mean Squared Error (RMSE): 1.18 goals per game
+
+Matches where actual goals differed most from predicted:
+                   team            opp  actual_gf  predicted_gf    error  abs_error
+91        Orlando Pride  Chicago Stars        6.0       1.51600 -4.48400    4.48400
+139      San Diego Wave        Courage        5.0       1.38650 -3.61350    3.61350
+155    Seattle Reign FC         Royals        4.0       1.16325 -2.83675    2.83675
+113  Portland Thorns FC           Dash        4.0       1.17125 -2.82875    2.82875
+134      San Diego Wave     Louisville        4.0       1.19100 -2.80900    2.80900</code></pre>
+</div>
+</div>
+<div id="1ac01321" class="cell" data-execution_count="125">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Aggregate total actual goals and total predicted goals per team</span></span>
+<span id="cb18-2"></span>
+<span id="cb18-3">team_totals <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> eval_df.groupby(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'team'</span>).agg(</span>
+<span id="cb18-4">    Total_Actual_GF<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'actual_gf'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'sum'</span>),</span>
+<span id="cb18-5">    Total_Predicted_GF<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'predicted_gf'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'sum'</span>)</span>
+<span id="cb18-6">).reset_index()</span>
+<span id="cb18-7"></span>
+<span id="cb18-8"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Sort by Actual Goals for a cleaner plot</span></span>
+<span id="cb18-9">team_totals <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> team_totals.sort_values(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Total_Actual_GF'</span>, ascending<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>)</span>
+<span id="cb18-10"></span>
+<span id="cb18-11"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#team_totals['team'] = team_totals['team'].map(team_mapping)</span></span>
+<span id="cb18-12"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># ---------------------------------------------------------</span></span>
+<span id="cb18-13"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Plot: Actual vs Predicted 2025 Goals by Team</span></span>
+<span id="cb18-14"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># ---------------------------------------------------------</span></span>
+<span id="cb18-15">fig, ax <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> plt.subplots(figsize<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">6</span>))</span>
+<span id="cb18-16"></span>
+<span id="cb18-17"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># We use the team codes for the Y-axis positions</span></span>
+<span id="cb18-18">y_positions <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> np.arange(<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">len</span>(team_totals))</span>
+<span id="cb18-19">bar_height <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.35</span></span>
+<span id="cb18-20"></span>
+<span id="cb18-21"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Plot actual and predicted bars side-by-side</span></span>
+<span id="cb18-22">ax.barh(y_positions <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> bar_height<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>, team_totals[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Total_Actual_GF'</span>], </span>
+<span id="cb18-23">        height<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>bar_height, label<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Actual 2025 Goals'</span>, color<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'royalblue'</span>)</span>
+<span id="cb18-24">ax.barh(y_positions <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> bar_height<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>, team_totals[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Total_Predicted_GF'</span>], </span>
+<span id="cb18-25">        height<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>bar_height, label<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Predicted 2025 Goals (BART)'</span>, color<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'darkorange'</span>)</span>
+<span id="cb18-26"></span>
+<span id="cb18-27"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Formatting the plot</span></span>
+<span id="cb18-28">ax.set_yticks(y_positions)</span>
+<span id="cb18-29">ax.set_yticklabels(team_totals[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'team'</span>]) <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># If you mapped team names back, they will show here!</span></span>
+<span id="cb18-30">ax.set_xlabel(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Total Goals For (GF)'</span>)</span>
+<span id="cb18-31">ax.set_title(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'NWSL 2025: Actual vs Predicted Goals by Team'</span>)</span>
+<span id="cb18-32">ax.legend()</span>
+<span id="cb18-33"></span>
+<span id="cb18-34">plt.tight_layout()</span>
+<span id="cb18-35">plt.show()</span>
+<span id="cb18-36"></span>
+<span id="cb18-37"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Print the aggregated dataframe</span></span>
+<span id="cb18-38"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">--- 2025 Season Totals ---"</span>)</span>
+<span id="cb18-39"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(team_totals.to_string(index<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">False</span>))</span></code></pre></div></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://srwis.github.io/personal_site/posts/nwsl_goals/nwsl_data_files/figure-html/cell-14-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+--- 2025 Season Totals ---
+                  team  Total_Actual_GF  Total_Predicted_GF
+         Chicago Stars             10.0            16.45075
+           Utah Royals             10.0            15.07650
+          Houston Dash             13.0            17.22800
+                Bay FC             14.0            17.68500
+             Gotham FC             14.0            15.84625
+      Seattle Reign FC             17.0            16.30600
+North Carolina Courage             18.0            18.50425
+    Portland Thorns FC             19.0            17.89900
+     Racing Louisville             19.0            16.72525
+         Angel City FC             20.0            16.06275
+         Orlando Pride             20.0            17.87200
+     Washington Spirit             21.0            17.40650
+        San Diego Wave             25.0            16.99150
+   Kansas City Current             29.0            17.85525</code></pre>
+</div>
+</div>
+
+
+</section>
+</section>
+
+ ]]></description>
+  <guid>https://srwis.github.io/personal_site/posts/nwsl_goals/nwsl_data.html</guid>
+  <pubDate>Sun, 12 Apr 2026 04:00:00 GMT</pubDate>
+</item>
 <item>
   <title>Privacy-First AI: Benchmarking Local LLMs for Scientific Paper Summarization in R</title>
   <link>https://srwis.github.io/personal_site/posts/LLM_evaluation/</link>
