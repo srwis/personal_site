@@ -228,6 +228,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
+<p>then I just want to peak out how many seasons we are working with</p>
 <div id="5cbc2f4e" class="cell" data-execution_count="70">
 <details class="code-fold">
 <summary>Code</summary>
@@ -238,6 +239,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <pre><code>array([2025, 2024, 2023, 2021, 2019])</code></pre>
 </div>
 </div>
+<p>and split the data up into test and train.</p>
 <div id="1298048f" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -255,7 +257,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>infer_features <span class="op">=</span> infer_df[cat_cols].fillna(<span class="op">-</span><span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<p>define bart. use a poisson distribution for goal scored because that is the most commonly used one for soccer goals and goals have to be integers. You can’t score 1.7 goals.</p>
+</section>
+<section id="building-the-model" class="level3">
+<h3 class="anchored" data-anchor-id="building-the-model">2. Building the model</h3>
+<p>Since goals are discrete counts (you can’t score 1.5 goals in real life), a Poisson distribution makes the most sense. The BART piece acts as a flexible layer to estimate the scoring rate.</p>
+<p>We are also going to wrap our inputs in <code>pm.Data</code>. This is a handy PyMC trick that lets us easily swap out the historical data for the 2025 schedule later on.</p>
 <div id="54058fd4" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -277,7 +283,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    trace_nwsl <span class="op">=</span> pm.sample(random_seed<span class="op">=</span>RANDOM_SEED,quiet<span class="op">=</span><span class="va">True</span>, progressbar<span class="op">=</span><span class="va">False</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<p>check some plots and convergence of the MCMC chains</p>
+</section>
+<section id="what-did-the-model-actually-learn" class="level3">
+<h3 class="anchored" data-anchor-id="what-did-the-model-actually-learn">3. What did the model actually learn?</h3>
+<p>Before we start predicting the future, it is worth looking under the hood. PyMC-BART gives us some great built-in plots to see what the trees figured out.</p>
 <div id="042c0124" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -341,6 +350,7 @@ mu_bart[1066] -2.350  0.361  -3.045   -1.722   1.00     385.0
 </div>
 </div>
 </div>
+<p>We can also run partial dependence plots to isolate specific variables. For example, plotting the venue feature will show you the exact mathematical bump a team gets from playing at home.</p>
 <div id="2519bc61" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -358,6 +368,7 @@ mu_bart[1066] -2.350  0.361  -3.045   -1.722   1.00     385.0
 <span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
+<p>Lets look at variable importance. This tells us which factors actually drive goal scoring. No big surprise here: the team attacking and the opponent defending matter the most.</p>
 <div id="c169693b" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -388,6 +399,11 @@ mu_bart[1066] -2.350  0.361  -3.045   -1.722   1.00     385.0
 </div>
 </div>
 </div>
+</section>
+<section id="forecasting-the-2025-season" class="level3">
+<h3 class="anchored" data-anchor-id="forecasting-the-2025-season">4. Forecasting the 2025 season</h3>
+<p>Now for the fun part. We swap our historical schedule for the 2025 fixtures using <code>pm.set_data</code>.</p>
+<p>There is one little PyMC quirk to keep in mind here. We have to pass the model a dummy target array full of zeros that matches the exact length of the 2025 schedule. This just tricks the model into resizing its output correctly.</p>
 <div id="1ce5ba97" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -447,6 +463,10 @@ Sampling ... <span style="color:rgb(23,100,244)">━━━━━━━━━━�
 15    2025     1   14       1.22275</code></pre>
 </div>
 </div>
+</section>
+<section id="did-it-work" class="level3">
+<h3 class="anchored" data-anchor-id="did-it-work">5. Did it work?</h3>
+<p>To see how well we did, we can calculate the Mean Absolute Error for individual games. But like I mentioned earlier, single soccer games are incredibly noisy. So we can calculate the game by game error.</p>
 <div id="72b2b37e" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -498,6 +518,7 @@ Matches where actual goals differed most from predicted:
 134      San Diego Wave     Louisville        4.0       1.19100 -2.80900    2.80900</code></pre>
 </div>
 </div>
+<p>But a much better sanity check is to add up the predicted goals for the entire season and compare them to what actually happened.</p>
 <div id="1ac01321" class="cell" data-execution_count="125">
 <details class="code-fold">
 <summary>Code</summary>
@@ -568,6 +589,7 @@ North Carolina Courage             18.0            18.50425
    Kansas City Current             29.0            17.85525</code></pre>
 </div>
 </div>
+<p>If you look at the chart and see a team scoring way more in real life than the BART model predicted, there are usually two explanations. Either they got insanely lucky with their finishing all season, or they signed a major offensive superstar that our pre-2025 data just didn’t know about yet.</p>
 
 
 </section>
