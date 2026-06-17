@@ -9,8 +9,2967 @@
 <link>https://srwis.github.io/personal_site/</link>
 <atom:link href="https://srwis.github.io/personal_site/index.xml" rel="self" type="application/rss+xml"/>
 <description>Babbling about Bioinformatics</description>
-<generator>quarto-1.8.27</generator>
-<lastBuildDate>Sun, 12 Apr 2026 04:00:00 GMT</lastBuildDate>
+<generator>quarto-1.9.37</generator>
+<lastBuildDate>Wed, 17 Jun 2026 04:00:00 GMT</lastBuildDate>
+<item>
+  <title>AO3 Hockey Fanfiction Analysis: The ‘Heated Rivalry’ Effect</title>
+  <dc:creator>Sadie Wisotsky</dc:creator>
+  <link>https://srwis.github.io/personal_site/posts/hockey_fic_visualization/hockey_fic_visualization.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<section id="ao3-hockey-fanfiction-analysis-the-heated-rivalry-effect" class="level1">
+<h1>AO3 Hockey Fanfiction Analysis: The “Heated Rivalry” Effect</h1>
+<p>This notebook explores the growth and evolution of hockey fanfiction on Archive of Our Own (AO3) and its relationship to the release of the television adaptation of Rachel Reid’s <strong>Heated Rivalry</strong> (premiered on HBO Max on <strong>November 28, 2025</strong>).</p>
+<p>We will visualize: 1. <strong>Fandom Streamgraph (Time Graphic)</strong>: A streamgraph showing the volume of works across grouped overarching fandom categories from 2014 to 2026. 2. <strong>Interactive Zoomable Fandom Bubble Chart</strong>: A client-side interactive packed bubble chart where clicking on a bubble drills down into its subcategories. 3. <strong>Fandom Overarching Tag Breakdowns</strong>: A side-by-side breakdown of the subcategories that make up the main <em>Hockey RPF</em> and <em>Heated Rivalry</em> tags. 4. <strong>Trope &amp; Character Tag Network</strong>: A network graph exploring co-occurrences of popular tropes and relationship tags (e.g.&nbsp;<em>Enemies to Lovers</em>, <em>Mutual Pining</em>).</p>
+<div id="cell-2" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-06-17T20:15:44.857400Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-06-17T20:15:44.857278Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-06-17T20:15:45.701876Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-06-17T20:15:45.701498Z&quot;}}" data-execution_count="1">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> sqlite3</span>
+<span id="cb1-2"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> pandas <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> pd</span>
+<span id="cb1-3"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> numpy <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> np</span>
+<span id="cb1-4"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> matplotlib.pyplot <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> plt</span>
+<span id="cb1-5"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> matplotlib.patheffects <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> path_effects</span>
+<span id="cb1-6"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> networkx <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> nx</span>
+<span id="cb1-7"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> textwrap</span>
+<span id="cb1-8"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> json <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> json_lib</span>
+<span id="cb1-9"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> itertools</span>
+<span id="cb1-10"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> collections <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> Counter</span>
+<span id="cb1-11"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> IPython.display <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> HTML</span>
+<span id="cb1-12"></span>
+<span id="cb1-13"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Set style for premium visualizations</span></span>
+<span id="cb1-14">plt.rcParams[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'font.sans-serif'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Arial'</span></span>
+<span id="cb1-15">plt.rcParams[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'font.family'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'sans-serif'</span></span>
+<span id="cb1-16">plt.rcParams[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'text.color'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'#333333'</span></span>
+<span id="cb1-17">plt.rcParams[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'axes.labelcolor'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'#333333'</span></span>
+<span id="cb1-18">plt.rcParams[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'xtick.color'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'#333333'</span></span>
+<span id="cb1-19">plt.rcParams[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'ytick.color'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'#333333'</span></span></code></pre></div></div>
+</details>
+</div>
+<section id="load-and-prepare-data" class="level2">
+<h2 class="anchored" data-anchor-id="load-and-prepare-data">1. Load and Prepare Data</h2>
+<p>We load the database, filter for years 2014 to 2026, and apply our classification logic to group raw fandom tags into overarching categories: - <strong>Hockey RPF</strong>: Combines general Hockey RPF, Men’s Hockey RPF, and Women’s Hockey RPF. - <strong>Heated Rivalry</strong>: Combines Heated Rivalry (TV), the Game Changers book series, and fics tagged with both.</p>
+<div id="cell-4" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-06-17T20:15:45.703454Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-06-17T20:15:45.703241Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-06-17T20:15:45.745936Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-06-17T20:15:45.745473Z&quot;}}" data-execution_count="2">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Connect to the database</span></span>
+<span id="cb2-2">conn <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> sqlite3.<span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">connect</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"hockey_fic.db"</span>)</span>
+<span id="cb2-3">df <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pd.read_sql_query(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"SELECT published, fandoms, tags FROM works;"</span>, conn)</span>
+<span id="cb2-4">conn.close()</span>
+<span id="cb2-5"></span>
+<span id="cb2-6"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Parse dates</span></span>
+<span id="cb2-7">df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'published_dt'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pd.to_datetime(df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'published'</span>], errors<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'coerce'</span>)</span>
+<span id="cb2-8">df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'year'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'published_dt'</span>].dt.year</span>
+<span id="cb2-9"></span>
+<span id="cb2-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Filter timeline</span></span>
+<span id="cb2-11">df_filtered <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> df[(df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'year'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2014</span>) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span> (df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'year'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2026</span>)].copy()</span>
+<span id="cb2-12"></span>
+<span id="cb2-13"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Define classification logic</span></span>
+<span id="cb2-14"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">def</span> classify_fandom(fandom_str):</span>
+<span id="cb2-15">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">not</span> fandom_str:</span>
+<span id="cb2-16">        <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Other Fandoms"</span></span>
+<span id="cb2-17">    f_lower <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> fandom_str.lower()</span>
+<span id="cb2-18">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"heated rivalry"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> f_lower <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">or</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"game changers"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> f_lower <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">or</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"rachel reid"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> f_lower:</span>
+<span id="cb2-19">        <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Heated Rivalry"</span></span>
+<span id="cb2-20">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"hockey rpf"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> f_lower <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">or</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"hockey rps"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> f_lower:</span>
+<span id="cb2-21">        <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Hockey RPF"</span></span>
+<span id="cb2-22">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"check please!"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> f_lower:</span>
+<span id="cb2-23">        <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Check Please! (Webcomic)"</span></span>
+<span id="cb2-24">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"original work"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> f_lower:</span>
+<span id="cb2-25">        <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Original Work"</span></span>
+<span id="cb2-26">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"harry potter"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> f_lower:</span>
+<span id="cb2-27">        <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Harry Potter"</span></span>
+<span id="cb2-28">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Other Fandoms"</span></span>
+<span id="cb2-29"></span>
+<span id="cb2-30">df_filtered[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'grouped_fandom'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> df_filtered[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'fandoms'</span>].<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">apply</span>(classify_fandom)</span>
+<span id="cb2-31"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(df_filtered[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'grouped_fandom'</span>].value_counts())</span></code></pre></div></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>grouped_fandom
+Hockey RPF                  5175
+Other Fandoms               2953
+Heated Rivalry              1330
+Check Please! (Webcomic)     578
+Original Work                191
+Harry Potter                 175
+Name: count, dtype: int64</code></pre>
+</div>
+</div>
+</section>
+<section id="fandom-volume-over-time-streamgraph" class="level2">
+<h2 class="anchored" data-anchor-id="fandom-volume-over-time-streamgraph">2. Fandom Volume Over Time: Streamgraph</h2>
+<p>We draw the streamgraph of these grouped categories over time. Notice how the combined streams show a highly clean, organic flow shape, showcasing the clear transition of focus to the <code>Heated Rivalry</code> group after the TV show premiere in late 2025.</p>
+<div id="cell-6" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-06-17T20:15:45.766462Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-06-17T20:15:45.766289Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-06-17T20:15:45.901627Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-06-17T20:15:45.901249Z&quot;}}" data-execution_count="3">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Set up group order and colors</span></span>
+<span id="cb4-2">top_groups <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> [<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Hockey RPF"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Other Fandoms"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Heated Rivalry"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Check Please! (Webcomic)"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Original Work"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Harry Potter"</span>]</span>
+<span id="cb4-3">colors <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> [</span>
+<span id="cb4-4">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'#3e76a6'</span>, <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Hockey RPF (Ice Blue)</span></span>
+<span id="cb4-5">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'#cccccc'</span>, <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Other Fandoms (Muted Grey)</span></span>
+<span id="cb4-6">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'#e06666'</span>, <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Heated Rivalry (Warm Coral/Red)</span></span>
+<span id="cb4-7">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'#e69138'</span>, <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Check Please! (Orange)</span></span>
+<span id="cb4-8">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'#8fce00'</span>, <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Original Work (Muted Green)</span></span>
+<span id="cb4-9">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'#a4c2f4'</span>  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Harry Potter (Soft Blue)</span></span>
+<span id="cb4-10">]</span>
+<span id="cb4-11"></span>
+<span id="cb4-12"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Prepare yearly data</span></span>
+<span id="cb4-13">years <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">list</span>(<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">range</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2014</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2027</span>))</span>
+<span id="cb4-14">yearly_data <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> []</span>
+<span id="cb4-15"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> g <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> top_groups:</span>
+<span id="cb4-16">    counts <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> [<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">len</span>(df_filtered[(df_filtered[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'year'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> y) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span> (df_filtered[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'grouped_fandom'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> g)]) <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> y <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> years]</span>
+<span id="cb4-17">    yearly_data.append(counts)</span>
+<span id="cb4-18"></span>
+<span id="cb4-19">y_matrix <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> np.array(yearly_data)</span>
+<span id="cb4-20"></span>
+<span id="cb4-21"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Plot</span></span>
+<span id="cb4-22">plt.figure(figsize<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">14</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">7</span>))</span>
+<span id="cb4-23">plt.stackplot(years, y_matrix, labels<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>top_groups, baseline<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'wiggle'</span>, colors<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>colors, alpha<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.95</span>)</span>
+<span id="cb4-24"></span>
+<span id="cb4-25"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Style</span></span>
+<span id="cb4-26">plt.title(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"The Evolving Landscape of Hockey Fanfiction (Grouped Categories, 2014 - 2026)"</span>, fontsize<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">16</span>, fontweight<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'bold'</span>, pad<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">20</span>)</span>
+<span id="cb4-27">plt.xlabel(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Year of Publication"</span>, fontsize<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">12</span>, labelpad<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>)</span>
+<span id="cb4-28">plt.xticks(years, fontsize<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>)</span>
+<span id="cb4-29">plt.yticks([])  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Hide y-axis since relative stream shape is what matters</span></span>
+<span id="cb4-30"></span>
+<span id="cb4-31">ax <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> plt.gca()</span>
+<span id="cb4-32">ax.spines[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'left'</span>].set_visible(<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">False</span>)</span>
+<span id="cb4-33">ax.spines[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'right'</span>].set_visible(<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">False</span>)</span>
+<span id="cb4-34">ax.spines[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'top'</span>].set_visible(<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">False</span>)</span>
+<span id="cb4-35">ax.spines[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'bottom'</span>].set_color(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'#cccccc'</span>)</span>
+<span id="cb4-36"></span>
+<span id="cb4-37"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Draw vertical indicator line for Heated Rivalry TV Premiere (Nov 2025)</span></span>
+<span id="cb4-38">plt.axvline(x<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2025.9</span>, color<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'#e06666'</span>, linestyle<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'--'</span>, linewidth<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.5</span>, alpha<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.8</span>)</span>
+<span id="cb4-39">plt.text(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2025.8</span>, plt.ylim()[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.9</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Heated Rivalry TV Premiere</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">(Nov 2025)'</span>, </span>
+<span id="cb4-40">         color<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'#e06666'</span>, fontsize<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>, fontweight<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'bold'</span>, ha<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'right'</span>, va<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'bottom'</span>)</span>
+<span id="cb4-41"></span>
+<span id="cb4-42">plt.legend(loc<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'upper left'</span>, bbox_to_anchor<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.02</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>), borderaxespad<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.</span>, frameon<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">False</span>, fontsize<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">11</span>)</span>
+<span id="cb4-43">plt.tight_layout()</span>
+<span id="cb4-44">plt.show()</span></code></pre></div></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://srwis.github.io/personal_site/posts/hockey_fic_visualization/hockey_fic_visualization_files/figure-html/cell-4-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="interactive-fandom-share-zoomable-bubble-chart" class="level2">
+<h2 class="anchored" data-anchor-id="interactive-fandom-share-zoomable-bubble-chart">3. Interactive Fandom Share: Zoomable Bubble Chart</h2>
+<p>This chart is built using <strong>D3.js</strong> to run entirely client-side, making it compatible with static websites (like GitHub Pages).</p>
+<p><strong>Try clicking on a circle</strong> (such as <code>Hockey RPF</code> or <code>Heated Rivalry</code>) to smoothly zoom in and drill down to view its subcategory breakdowns. Click on the white background to zoom back out.</p>
+<div id="cell-8" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-06-17T20:15:45.903170Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-06-17T20:15:45.903049Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-06-17T20:15:45.921957Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-06-17T20:15:45.921691Z&quot;}}" data-execution_count="4">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Subclassification definitions for hierarchy</span></span>
+<span id="cb5-2"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">def</span> subclassify_hockey_rpf(fdom):</span>
+<span id="cb5-3">    f_lower <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> fdom.lower()</span>
+<span id="cb5-4">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"women's hockey rpf"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> f_lower: <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Women's Hockey RPF"</span></span>
+<span id="cb5-5">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"men's hockey rpf"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> f_lower: <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Men's Hockey RPF"</span></span>
+<span id="cb5-6">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Hockey RPF (General)"</span></span>
+<span id="cb5-7"></span>
+<span id="cb5-8"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">def</span> subclassify_heated_rivalry(fdom):</span>
+<span id="cb5-9">    f_lower <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> fdom.lower()</span>
+<span id="cb5-10">    has_tv <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"tv"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> f_lower</span>
+<span id="cb5-11">    has_book <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"game changers"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> f_lower <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">or</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"rachel reid"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> f_lower <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">or</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"book"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> f_lower</span>
+<span id="cb5-12">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> has_tv <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">and</span> has_book: <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Combined (TV &amp; Book Series)"</span></span>
+<span id="cb5-13">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> has_tv: <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Heated Rivalry (TV) Only"</span></span>
+<span id="cb5-14">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Game Changers Book Series Only"</span></span>
+<span id="cb5-15"></span>
+<span id="cb5-16">rpf_sub_counts <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> {}</span>
+<span id="cb5-17">hr_sub_counts <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> {}</span>
+<span id="cb5-18">check_please_val <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span></span>
+<span id="cb5-19">original_work_val <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span></span>
+<span id="cb5-20">harry_potter_val <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span></span>
+<span id="cb5-21">other_fandoms_val <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span></span>
+<span id="cb5-22"></span>
+<span id="cb5-23"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> f <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> df_filtered[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'fandoms'</span>]:</span>
+<span id="cb5-24">    f_lower <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">str</span>(f).lower()</span>
+<span id="cb5-25">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"heated rivalry"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> f_lower <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">or</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"game changers"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> f_lower <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">or</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"rachel reid"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> f_lower:</span>
+<span id="cb5-26">        sub <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> subclassify_heated_rivalry(f)</span>
+<span id="cb5-27">        hr_sub_counts[sub] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> hr_sub_counts.get(sub, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb5-28">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">elif</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"hockey rpf"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> f_lower <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">or</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"hockey rps"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> f_lower:</span>
+<span id="cb5-29">        sub <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> subclassify_hockey_rpf(f)</span>
+<span id="cb5-30">        rpf_sub_counts[sub] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> rpf_sub_counts.get(sub, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb5-31">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">elif</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"check please!"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> f_lower:</span>
+<span id="cb5-32">        check_please_val <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb5-33">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">elif</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"original work"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> f_lower:</span>
+<span id="cb5-34">        original_work_val <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb5-35">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">elif</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"harry potter"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> f_lower:</span>
+<span id="cb5-36">        harry_potter_val <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb5-37">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">else</span>:</span>
+<span id="cb5-38">        other_fandoms_val <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb5-39"></span>
+<span id="cb5-40"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Build JSON hierarchy</span></span>
+<span id="cb5-41">hierarchy <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> {</span>
+<span id="cb5-42">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"name"</span>: <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Fandoms"</span>,</span>
+<span id="cb5-43">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"children"</span>: [</span>
+<span id="cb5-44">        {</span>
+<span id="cb5-45">            <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"name"</span>: <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Hockey RPF"</span>,</span>
+<span id="cb5-46">            <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"children"</span>: [{<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"name"</span>: k, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"value"</span>: v} <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> k, v <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> rpf_sub_counts.items()]</span>
+<span id="cb5-47">        },</span>
+<span id="cb5-48">        {</span>
+<span id="cb5-49">            <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"name"</span>: <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Heated Rivalry"</span>,</span>
+<span id="cb5-50">            <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"children"</span>: [{<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"name"</span>: k, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"value"</span>: v} <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> k, v <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> hr_sub_counts.items()]</span>
+<span id="cb5-51">        },</span>
+<span id="cb5-52">        {<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"name"</span>: <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Check Please! (Webcomic)"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"value"</span>: check_please_val},</span>
+<span id="cb5-53">        {<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"name"</span>: <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Original Work"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"value"</span>: original_work_val},</span>
+<span id="cb5-54">        {<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"name"</span>: <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Harry Potter"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"value"</span>: harry_potter_val},</span>
+<span id="cb5-55">        {<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"name"</span>: <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Other Fandoms"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"value"</span>: other_fandoms_val}</span>
+<span id="cb5-56">    ]</span>
+<span id="cb5-57">}</span>
+<span id="cb5-58"></span>
+<span id="cb5-59"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Construct HTML/JS with D3</span></span>
+<span id="cb5-60">html_code <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">f"""</span></span>
+<span id="cb5-61"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">&lt;div id="d3-zoomable-bubble" style="width: 650px; height: 650px; margin: auto; font-family: system-ui, sans-serif;"&gt;&lt;/div&gt;</span></span>
+<span id="cb5-62"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">&lt;script src="https://d3js.org/d3.v7.min.js"&gt;&lt;/script&gt;</span></span>
+<span id="cb5-63"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">&lt;script&gt;</span></span>
+<span id="cb5-64"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">(function() </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">{{</span></span>
+<span id="cb5-65"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">    const data = </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>json_lib<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>dumps(hierarchy, indent<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb5-66"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">    const width = 650;</span></span>
+<span id="cb5-67"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">    const height = 650;</span></span>
+<span id="cb5-68"></span>
+<span id="cb5-69"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">    const colorScale = d3.scaleOrdinal()</span></span>
+<span id="cb5-70"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">        .domain(["Hockey RPF", "Other Fandoms", "Heated Rivalry", "Check Please! (Webcomic)", "Original Work", "Harry Potter"])</span></span>
+<span id="cb5-71"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">        .range(["#234d75", "#cccccc", "#e06666", "#7fc4ce", "#a1e3b1", "#a4c2f4"]);</span></span>
+<span id="cb5-72"></span>
+<span id="cb5-73"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">    const subColors = </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">{{</span></span>
+<span id="cb5-74"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">        "Hockey RPF (General)": "#3e76a6",</span></span>
+<span id="cb5-75"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">        "Men's Hockey RPF": "#4596b5",</span></span>
+<span id="cb5-76"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">        "Women's Hockey RPF": "#a6dedb",</span></span>
+<span id="cb5-77"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">        "Combined (TV &amp; Book Series)": "#f1c232",</span></span>
+<span id="cb5-78"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">        "Heated Rivalry (TV) Only": "#ffd966",</span></span>
+<span id="cb5-79"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">        "Game Changers Book Series Only": "#91dec6"</span></span>
+<span id="cb5-80"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">    </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">}}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">;</span></span>
+<span id="cb5-81"></span>
+<span id="cb5-82"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">    const pack = data =&gt; d3.pack()</span></span>
+<span id="cb5-83"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">        .size([width, height])</span></span>
+<span id="cb5-84"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">        .padding(4)</span></span>
+<span id="cb5-85"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">        (d3.hierarchy(data)</span></span>
+<span id="cb5-86"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">            .sum(d =&gt; d.value)</span></span>
+<span id="cb5-87"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">            .sort((a, b) =&gt; b.value - a.value));</span></span>
+<span id="cb5-88"></span>
+<span id="cb5-89"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">    const root = pack(data);</span></span>
+<span id="cb5-90"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">    let focus = root;</span></span>
+<span id="cb5-91"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">    let view;</span></span>
+<span id="cb5-92"></span>
+<span id="cb5-93"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">    const svg = d3.select("#d3-zoomable-bubble").append("svg")</span></span>
+<span id="cb5-94"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">        .attr("viewBox", `0 0 $</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">{{</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">width</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">}}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> $</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">{{</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">height</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">}}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`)</span></span>
+<span id="cb5-95"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">        .attr("width", "100%")</span></span>
+<span id="cb5-96"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">        .attr("height", "100%")</span></span>
+<span id="cb5-97"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">        .style("display", "block")</span></span>
+<span id="cb5-98"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">        .style("background", "white")</span></span>
+<span id="cb5-99"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">        .style("cursor", "pointer")</span></span>
+<span id="cb5-100"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">        .on("click", (event) =&gt; zoom(event, root));</span></span>
+<span id="cb5-101"></span>
+<span id="cb5-102"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">    // Create tooltip dynamically on body</span></span>
+<span id="cb5-103"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">    let tooltip = d3.select("body").select("#d3-bubble-tooltip");</span></span>
+<span id="cb5-104"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">    if (tooltip.empty()) </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">{{</span></span>
+<span id="cb5-105"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">        tooltip = d3.select("body").append("div")</span></span>
+<span id="cb5-106"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">            .attr("id", "d3-bubble-tooltip")</span></span>
+<span id="cb5-107"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">            .style("position", "absolute")</span></span>
+<span id="cb5-108"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">            .style("opacity", 0)</span></span>
+<span id="cb5-109"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">            .style("pointer-events", "none")</span></span>
+<span id="cb5-110"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">            .style("background", "rgba(33, 33, 33, 0.9)")</span></span>
+<span id="cb5-111"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">            .style("color", "white")</span></span>
+<span id="cb5-112"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">            .style("padding", "8px 12px")</span></span>
+<span id="cb5-113"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">            .style("border-radius", "6px")</span></span>
+<span id="cb5-114"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">            .style("font-size", "12px")</span></span>
+<span id="cb5-115"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">            .style("font-family", "sans-serif")</span></span>
+<span id="cb5-116"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">            .style("box-shadow", "0 4px 12px rgba(0,0,0,0.15)")</span></span>
+<span id="cb5-117"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">            .style("z-index", "1000")</span></span>
+<span id="cb5-118"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">            .style("transition", "opacity 0.15s");</span></span>
+<span id="cb5-119"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">    </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">}}</span></span>
+<span id="cb5-120"></span>
+<span id="cb5-121"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">    const node = svg.append("g")</span></span>
+<span id="cb5-122"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">        .selectAll("circle")</span></span>
+<span id="cb5-123"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">        .data(root.descendants().slice(1))</span></span>
+<span id="cb5-124"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">        .join("circle")</span></span>
+<span id="cb5-125"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">            .attr("fill", d =&gt; </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">{{</span></span>
+<span id="cb5-126"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">                if (d.depth === 1) return colorScale(d.data.name);</span></span>
+<span id="cb5-127"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">                return subColors[d.data.name] || "#e1eedd";</span></span>
+<span id="cb5-128"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">            </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">}}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span id="cb5-129"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">            .style("pointer-events", d =&gt; d.parent === root ? "auto" : "none")</span></span>
+<span id="cb5-130"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">            .on("mouseover", function(event, d) </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">{{</span></span>
+<span id="cb5-131"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">                d3.select(this).attr("stroke", "#333").attr("stroke-width", 1.5);</span></span>
+<span id="cb5-132"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">                tooltip.style("opacity", 1);</span></span>
+<span id="cb5-133"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">                tooltip.selectAll("*").remove();</span></span>
+<span id="cb5-134"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">                tooltip.append("strong").text(d.data.name);</span></span>
+<span id="cb5-135"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">                tooltip.append("br");</span></span>
+<span id="cb5-136"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">                tooltip.append("span").text("Works: " + d.value.toLocaleString());</span></span>
+<span id="cb5-137"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">            </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">}}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span id="cb5-138"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">            .on("mousemove", function(event) </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">{{</span></span>
+<span id="cb5-139"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">                tooltip</span></span>
+<span id="cb5-140"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">                    .style("left", (event.pageX + 15) + "px")</span></span>
+<span id="cb5-141"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">                    .style("top", (event.pageY - 15) + "px");</span></span>
+<span id="cb5-142"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">            </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">}}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span id="cb5-143"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">            .on("mouseout", function() </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">{{</span></span>
+<span id="cb5-144"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">                d3.select(this).attr("stroke", null);</span></span>
+<span id="cb5-145"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">                tooltip.style("opacity", 0);</span></span>
+<span id="cb5-146"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">            </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">}}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span id="cb5-147"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">            .on("click", (event, d) =&gt; </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">{{</span></span>
+<span id="cb5-148"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">                if (focus !== d) </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">{{</span></span>
+<span id="cb5-149"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">                    zoom(event, d);</span></span>
+<span id="cb5-150"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">                    event.stopPropagation();</span></span>
+<span id="cb5-151"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">                </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">}}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> else </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">{{</span></span>
+<span id="cb5-152"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">                    zoom(event, d.parent || root);</span></span>
+<span id="cb5-153"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">                    event.stopPropagation();</span></span>
+<span id="cb5-154"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">                </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">}}</span></span>
+<span id="cb5-155"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">            </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">}}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb5-156"></span>
+<span id="cb5-157"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">    function getTextColor(d) </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">{{</span></span>
+<span id="cb5-158"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">        const color = d.depth === 1 ? colorScale(d.data.name) : (subColors[d.data.name] || "#333");</span></span>
+<span id="cb5-159"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">        return (color === "#234d75" || color === "#3e76a6" || color === "#4596b5") ? "white" : "#333333";</span></span>
+<span id="cb5-160"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">    </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">}}</span></span>
+<span id="cb5-161"></span>
+<span id="cb5-162"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">    const label = svg.append("g")</span></span>
+<span id="cb5-163"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">        .attr("pointer-events", "none")</span></span>
+<span id="cb5-164"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">        .selectAll("foreignObject")</span></span>
+<span id="cb5-165"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">        .data(root.descendants().slice(1))</span></span>
+<span id="cb5-166"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">        .join("foreignObject")</span></span>
+<span id="cb5-167"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">            .style("display", d =&gt; d.parent === root ? "block" : "none")</span></span>
+<span id="cb5-168"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">            .each(function(d) </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">{{</span></span>
+<span id="cb5-169"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">                const container = d3.select(this);</span></span>
+<span id="cb5-170"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">                const div = container.append("xhtml:div")</span></span>
+<span id="cb5-171"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">                    .style("display", "flex")</span></span>
+<span id="cb5-172"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">                    .style("align-items", "center")</span></span>
+<span id="cb5-173"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">                    .style("justify-content", "center")</span></span>
+<span id="cb5-174"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">                    .style("width", "100%")</span></span>
+<span id="cb5-175"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">                    .style("height", "100%")</span></span>
+<span id="cb5-176"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">                    .style("text-align", "center")</span></span>
+<span id="cb5-177"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">                    .style("font-family", "sans-serif")</span></span>
+<span id="cb5-178"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">                    .style("font-size", "11px")</span></span>
+<span id="cb5-179"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">                    .style("font-weight", "bold")</span></span>
+<span id="cb5-180"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">                    .style("color", getTextColor(d))</span></span>
+<span id="cb5-181"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">                    .style("line-height", "1.2")</span></span>
+<span id="cb5-182"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">                    .style("word-wrap", "break-word");</span></span>
+<span id="cb5-183"></span>
+<span id="cb5-184"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">                const innerDiv = div.append("div");</span></span>
+<span id="cb5-185"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">                innerDiv.append("span").text(d.data.name);</span></span>
+<span id="cb5-186"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">                if (d.data.value) </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">{{</span></span>
+<span id="cb5-187"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">                    innerDiv.append("br");</span></span>
+<span id="cb5-188"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">                    innerDiv.append("span")</span></span>
+<span id="cb5-189"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">                        .style("font-size", "0.85em")</span></span>
+<span id="cb5-190"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">                        .style("opacity", "0.85")</span></span>
+<span id="cb5-191"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">                        .style("font-weight", "normal")</span></span>
+<span id="cb5-192"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">                        .text("(" + d.data.value.toLocaleString() + ")");</span></span>
+<span id="cb5-193"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">                </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">}}</span></span>
+<span id="cb5-194"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">            </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">}}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb5-195"></span>
+<span id="cb5-196"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">    zoomTo([root.x, root.y, root.r * 2]);</span></span>
+<span id="cb5-197"></span>
+<span id="cb5-198"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">    function zoomTo(v) </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">{{</span></span>
+<span id="cb5-199"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">        const k = width / v[2];</span></span>
+<span id="cb5-200"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">        view = v;</span></span>
+<span id="cb5-201"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">        node.attr("transform", d =&gt; `translate($</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">{{</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">(d.x - v[0]) * k</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">}}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">,$</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">{{</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">(d.y - v[1]) * k</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">}}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">)`);</span></span>
+<span id="cb5-202"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">        node.attr("r", d =&gt; d.r * k);</span></span>
+<span id="cb5-203"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">        label</span></span>
+<span id="cb5-204"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">            .attr("width", d =&gt; d.r * k * 1.6)</span></span>
+<span id="cb5-205"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">            .attr("height", d =&gt; d.r * k * 1.6)</span></span>
+<span id="cb5-206"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">            .attr("x", d =&gt; (d.x - v[0]) * k - (d.r * k * 0.8))</span></span>
+<span id="cb5-207"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">            .attr("y", d =&gt; (d.y - v[1]) * k - (d.r * k * 0.8));</span></span>
+<span id="cb5-208"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">    </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">}}</span></span>
+<span id="cb5-209"></span>
+<span id="cb5-210"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">    function zoom(event, d) </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">{{</span></span>
+<span id="cb5-211"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">        const focus0 = focus;</span></span>
+<span id="cb5-212"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">        focus = d;</span></span>
+<span id="cb5-213"></span>
+<span id="cb5-214"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">        const transition = svg.transition()</span></span>
+<span id="cb5-215"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">            .duration(750)</span></span>
+<span id="cb5-216"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">            .tween("zoom", d =&gt; </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">{{</span></span>
+<span id="cb5-217"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">                const i = d3.interpolateZoom(view, [focus.x, focus.y, focus.r * 2]);</span></span>
+<span id="cb5-218"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">                return t =&gt; zoomTo(i(t));</span></span>
+<span id="cb5-219"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">            </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">}}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb5-220"></span>
+<span id="cb5-221"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">        // Enable pointer events dynamically for children of the new focus node</span></span>
+<span id="cb5-222"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">        node.style("pointer-events", nodeVal =&gt; </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">{{</span></span>
+<span id="cb5-223"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">            if (nodeVal.parent === focus) return "auto";</span></span>
+<span id="cb5-224"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">            if (nodeVal === focus &amp;&amp; focus !== root) return "auto";</span></span>
+<span id="cb5-225"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">            return "none";</span></span>
+<span id="cb5-226"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">        </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">}}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb5-227"></span>
+<span id="cb5-228"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">        label</span></span>
+<span id="cb5-229"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">          .filter(function(d) </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">{{</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> return d.parent === focus || this.style.display === "block"; </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">}}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span id="cb5-230"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">          .transition(transition)</span></span>
+<span id="cb5-231"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">            .style("opacity", d =&gt; d.parent === focus ? 1 : 0)</span></span>
+<span id="cb5-232"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">            .on("start", function(d) </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">{{</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> if (d.parent === focus) this.style.display = "block"; </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">}}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span id="cb5-233"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">            .on("end", function(d) </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">{{</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> if (d.parent !== focus) this.style.display = "none"; </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">}}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">);</span></span>
+<span id="cb5-234"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">    </span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">}}</span></span>
+<span id="cb5-235"><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">}}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">)();</span></span>
+<span id="cb5-236"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">&lt;/script&gt;</span></span>
+<span id="cb5-237"><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"""</span></span>
+<span id="cb5-238">HTML(html_code)</span></code></pre></div></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="4">
+
+<div id="d3-zoomable-bubble" style="width: 650px; height: 650px; margin: auto; font-family: system-ui, sans-serif;"></div>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script>
+(function() {
+    const data = {
+  "name": "Fandoms",
+  "children": [
+    {
+      "name": "Hockey RPF",
+      "children": [
+        {
+          "name": "Hockey RPF (General)",
+          "value": 2841
+        },
+        {
+          "name": "Women's Hockey RPF",
+          "value": 47
+        },
+        {
+          "name": "Men's Hockey RPF",
+          "value": 2287
+        }
+      ]
+    },
+    {
+      "name": "Heated Rivalry",
+      "children": [
+        {
+          "name": "Combined (TV & Book Series)",
+          "value": 727
+        },
+        {
+          "name": "Game Changers Book Series Only",
+          "value": 83
+        },
+        {
+          "name": "Heated Rivalry (TV) Only",
+          "value": 520
+        }
+      ]
+    },
+    {
+      "name": "Check Please! (Webcomic)",
+      "value": 578
+    },
+    {
+      "name": "Original Work",
+      "value": 191
+    },
+    {
+      "name": "Harry Potter",
+      "value": 175
+    },
+    {
+      "name": "Other Fandoms",
+      "value": 2953
+    }
+  ]
+};
+    const width = 650;
+    const height = 650;
+
+    const colorScale = d3.scaleOrdinal()
+        .domain(["Hockey RPF", "Other Fandoms", "Heated Rivalry", "Check Please! (Webcomic)", "Original Work", "Harry Potter"])
+        .range(["#234d75", "#cccccc", "#e06666", "#7fc4ce", "#a1e3b1", "#a4c2f4"]);
+
+    const subColors = {
+        "Hockey RPF (General)": "#3e76a6",
+        "Men's Hockey RPF": "#4596b5",
+        "Women's Hockey RPF": "#a6dedb",
+        "Combined (TV & Book Series)": "#f1c232",
+        "Heated Rivalry (TV) Only": "#ffd966",
+        "Game Changers Book Series Only": "#91dec6"
+    };
+
+    const pack = data => d3.pack()
+        .size([width, height])
+        .padding(4)
+        (d3.hierarchy(data)
+            .sum(d => d.value)
+            .sort((a, b) => b.value - a.value));
+
+    const root = pack(data);
+    let focus = root;
+    let view;
+
+    const svg = d3.select("#d3-zoomable-bubble").append("svg")
+        .attr("viewBox", `0 0 ${width} ${height}`)
+        .attr("width", "100%")
+        .attr("height", "100%")
+        .style("display", "block")
+        .style("background", "white")
+        .style("cursor", "pointer")
+        .on("click", (event) => zoom(event, root));
+
+    // Create tooltip dynamically on body
+    let tooltip = d3.select("body").select("#d3-bubble-tooltip");
+    if (tooltip.empty()) {
+        tooltip = d3.select("body").append("div")
+            .attr("id", "d3-bubble-tooltip")
+            .style("position", "absolute")
+            .style("opacity", 0)
+            .style("pointer-events", "none")
+            .style("background", "rgba(33, 33, 33, 0.9)")
+            .style("color", "white")
+            .style("padding", "8px 12px")
+            .style("border-radius", "6px")
+            .style("font-size", "12px")
+            .style("font-family", "sans-serif")
+            .style("box-shadow", "0 4px 12px rgba(0,0,0,0.15)")
+            .style("z-index", "1000")
+            .style("transition", "opacity 0.15s");
+    }
+
+    const node = svg.append("g")
+        .selectAll("circle")
+        .data(root.descendants().slice(1))
+        .join("circle")
+            .attr("fill", d => {
+                if (d.depth === 1) return colorScale(d.data.name);
+                return subColors[d.data.name] || "#e1eedd";
+            })
+            .style("pointer-events", d => d.parent === root ? "auto" : "none")
+            .on("mouseover", function(event, d) {
+                d3.select(this).attr("stroke", "#333").attr("stroke-width", 1.5);
+                tooltip.style("opacity", 1);
+                tooltip.selectAll("*").remove();
+                tooltip.append("strong").text(d.data.name);
+                tooltip.append("br");
+                tooltip.append("span").text("Works: " + d.value.toLocaleString());
+            })
+            .on("mousemove", function(event) {
+                tooltip
+                    .style("left", (event.pageX + 15) + "px")
+                    .style("top", (event.pageY - 15) + "px");
+            })
+            .on("mouseout", function() {
+                d3.select(this).attr("stroke", null);
+                tooltip.style("opacity", 0);
+            })
+            .on("click", (event, d) => {
+                if (focus !== d) {
+                    zoom(event, d);
+                    event.stopPropagation();
+                } else {
+                    zoom(event, d.parent || root);
+                    event.stopPropagation();
+                }
+            });
+
+    function getTextColor(d) {
+        const color = d.depth === 1 ? colorScale(d.data.name) : (subColors[d.data.name] || "#333");
+        return (color === "#234d75" || color === "#3e76a6" || color === "#4596b5") ? "white" : "#333333";
+    }
+
+    const label = svg.append("g")
+        .attr("pointer-events", "none")
+        .selectAll("foreignObject")
+        .data(root.descendants().slice(1))
+        .join("foreignObject")
+            .style("display", d => d.parent === root ? "block" : "none")
+            .each(function(d) {
+                const container = d3.select(this);
+                const div = container.append("xhtml:div")
+                    .style("display", "flex")
+                    .style("align-items", "center")
+                    .style("justify-content", "center")
+                    .style("width", "100%")
+                    .style("height", "100%")
+                    .style("text-align", "center")
+                    .style("font-family", "sans-serif")
+                    .style("font-size", "11px")
+                    .style("font-weight", "bold")
+                    .style("color", getTextColor(d))
+                    .style("line-height", "1.2")
+                    .style("word-wrap", "break-word");
+
+                const innerDiv = div.append("div");
+                innerDiv.append("span").text(d.data.name);
+                if (d.data.value) {
+                    innerDiv.append("br");
+                    innerDiv.append("span")
+                        .style("font-size", "0.85em")
+                        .style("opacity", "0.85")
+                        .style("font-weight", "normal")
+                        .text("(" + d.data.value.toLocaleString() + ")");
+                }
+            });
+
+    zoomTo([root.x, root.y, root.r * 2]);
+
+    function zoomTo(v) {
+        const k = width / v[2];
+        view = v;
+        node.attr("transform", d => `translate(${(d.x - v[0]) * k},${(d.y - v[1]) * k})`);
+        node.attr("r", d => d.r * k);
+        label
+            .attr("width", d => d.r * k * 1.6)
+            .attr("height", d => d.r * k * 1.6)
+            .attr("x", d => (d.x - v[0]) * k - (d.r * k * 0.8))
+            .attr("y", d => (d.y - v[1]) * k - (d.r * k * 0.8));
+    }
+
+    function zoom(event, d) {
+        const focus0 = focus;
+        focus = d;
+
+        const transition = svg.transition()
+            .duration(750)
+            .tween("zoom", d => {
+                const i = d3.interpolateZoom(view, [focus.x, focus.y, focus.r * 2]);
+                return t => zoomTo(i(t));
+            });
+
+        // Enable pointer events dynamically for children of the new focus node
+        node.style("pointer-events", nodeVal => {
+            if (nodeVal.parent === focus) return "auto";
+            if (nodeVal === focus && focus !== root) return "auto";
+            return "none";
+        });
+
+        label
+          .filter(function(d) { return d.parent === focus || this.style.display === "block"; })
+          .transition(transition)
+            .style("opacity", d => d.parent === focus ? 1 : 0)
+            .on("start", function(d) { if (d.parent === focus) this.style.display = "block"; })
+            .on("end", function(d) { if (d.parent !== focus) this.style.display = "none"; });
+    }
+})();
+</script>
+</div>
+</div>
+</section>
+<section id="fandom-overarching-tag-breakdowns" class="level2">
+<h2 class="anchored" data-anchor-id="fandom-overarching-tag-breakdowns">4. Fandom Overarching Tag Breakdowns</h2>
+<p>Here we break down the two main grouped categories to see their subcategory distribution. - <strong>Hockey RPF</strong> is divided into Men’s Hockey RPF, Women’s Hockey RPF, and general/generic Hockey RPF. - <strong>Heated Rivalry</strong> is divided into fics focusing solely on the TV show, fics tagged with the book series, and fics tagged with both.</p>
+<div id="cell-10" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-06-17T20:15:45.923198Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-06-17T20:15:45.923080Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-06-17T20:15:46.021740Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-06-17T20:15:46.021437Z&quot;}}" data-execution_count="5">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1">df_filtered[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'sub_rpf'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> df_filtered[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'fandoms'</span>].<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">apply</span>(subclassify_hockey_rpf)</span>
+<span id="cb6-2">df_filtered[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'sub_hr'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> df_filtered[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'fandoms'</span>].<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">apply</span>(subclassify_heated_rivalry)</span>
+<span id="cb6-3"></span>
+<span id="cb6-4">rpf_counts <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> df_filtered[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'sub_rpf'</span>].value_counts()</span>
+<span id="cb6-5">hr_counts <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> df_filtered[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'sub_hr'</span>].value_counts()</span>
+<span id="cb6-6"></span>
+<span id="cb6-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Plot side-by-side Donut Charts</span></span>
+<span id="cb6-8">fig, (ax1, ax2) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> plt.subplots(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>, figsize<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">15</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">7.5</span>))</span>
+<span id="cb6-9"></span>
+<span id="cb6-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Palette mapping</span></span>
+<span id="cb6-11">rpf_colors <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> [<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'#234d75'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'#4596b5'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'#a6dedb'</span>]</span>
+<span id="cb6-12">hr_colors <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> [<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'#e06666'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'#f1c232'</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'#91dec6'</span>]</span>
+<span id="cb6-13"></span>
+<span id="cb6-14"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Donut 1: Hockey RPF Breakdown</span></span>
+<span id="cb6-15">wedges1, texts1, autotexts1 <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> ax1.pie(</span>
+<span id="cb6-16">    rpf_counts, </span>
+<span id="cb6-17">    labels<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>rpf_counts.index, </span>
+<span id="cb6-18">    autopct<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%1.1f%%</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'</span>,</span>
+<span id="cb6-19">    startangle<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">90</span>, </span>
+<span id="cb6-20">    colors<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>rpf_colors,</span>
+<span id="cb6-21">    wedgeprops<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">dict</span>(width<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.4</span>, edgecolor<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'w'</span>, linewidth<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.5</span>),</span>
+<span id="cb6-22">    textprops<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">dict</span>(color<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"#333333"</span>, fontweight<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'bold'</span>)</span>
+<span id="cb6-23">)</span>
+<span id="cb6-24">plt.setp(autotexts1, size<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>, weight<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"bold"</span>, color<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"white"</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> rpf_colors[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'#234d75'</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">else</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"#333333"</span>)</span>
+<span id="cb6-25">ax1.set_title(<span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">f"Hockey RPF Breakdown</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">\n</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">(Total: </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>rpf_counts<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">sum</span>()<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:,}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> works)"</span>, fontsize<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">13</span>, fontweight<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'bold'</span>, pad<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">15</span>)</span>
+<span id="cb6-26"></span>
+<span id="cb6-27"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Donut 2: Heated Rivalry Breakdown</span></span>
+<span id="cb6-28">wedges2, texts2, autotexts2 <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> ax2.pie(</span>
+<span id="cb6-29">    hr_counts, </span>
+<span id="cb6-30">    labels<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>hr_counts.index, </span>
+<span id="cb6-31">    autopct<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%1.1f%%</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'</span>,</span>
+<span id="cb6-32">    startangle<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">90</span>, </span>
+<span id="cb6-33">    colors<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>hr_colors,</span>
+<span id="cb6-34">    wedgeprops<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">dict</span>(width<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.4</span>, edgecolor<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'w'</span>, linewidth<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.5</span>),</span>
+<span id="cb6-35">    textprops<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">dict</span>(color<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"#333333"</span>, fontweight<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'bold'</span>)</span>
+<span id="cb6-36">)</span>
+<span id="cb6-37">plt.setp(autotexts2, size<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>, weight<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"bold"</span>, color<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"#333333"</span>)</span>
+<span id="cb6-38">ax2.set_title(<span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">f"Heated Rivalry &amp; Game Changers Breakdown</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">\n</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">(Total: </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>hr_counts<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">sum</span>()<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:,}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> works)"</span>, fontsize<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">13</span>, fontweight<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'bold'</span>, pad<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">15</span>)</span>
+<span id="cb6-39"></span>
+<span id="cb6-40">plt.suptitle(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Detailed Subcategory Analysis for Key Overarching Tags"</span>, fontsize<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">16</span>, fontweight<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'bold'</span>, y<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.98</span>)</span>
+<span id="cb6-41">plt.tight_layout()</span>
+<span id="cb6-42">plt.show()</span></code></pre></div></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://srwis.github.io/personal_site/posts/hockey_fic_visualization/hockey_fic_visualization_files/figure-html/cell-6-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="trope-character-tag-network" class="level2">
+<h2 class="anchored" data-anchor-id="trope-character-tag-network">5. Trope &amp; Character Tag Network</h2>
+<p>To analyze the thematic elements of these fics, we map the relationships between popular tropes and relationship-specific tags.</p>
+<p>We calculate co-occurrences of tags appearing in the same work, filtering for associations appearing in <strong>at least 60 works</strong> to isolate the core thematic network and avoid a cluttered hairball.</p>
+<div id="cell-12" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-06-17T20:15:46.022996Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-06-17T20:15:46.022882Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-06-17T20:15:46.525649Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-06-17T20:15:46.525238Z&quot;}}" data-execution_count="6">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Parse tags</span></span>
+<span id="cb7-2">tag_lists <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> []</span>
+<span id="cb7-3"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> tags_json <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> df[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'tags'</span>].dropna():</span>
+<span id="cb7-4">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">try</span>:</span>
+<span id="cb7-5">        tags <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> [t.strip() <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> t <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> json_lib.loads(tags_json)]</span>
+<span id="cb7-6">        tag_lists.append(tags)</span>
+<span id="cb7-7">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">except</span>:</span>
+<span id="cb7-8">        <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">pass</span></span>
+<span id="cb7-9"></span>
+<span id="cb7-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Count tag frequencies</span></span>
+<span id="cb7-11">all_tags <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">list</span>(itertools.chain(<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>tag_lists))</span>
+<span id="cb7-12">tag_counts <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> Counter(all_tags)</span>
+<span id="cb7-13"></span>
+<span id="cb7-14"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Exclude generic structural and fandom tags to focus on tropes</span></span>
+<span id="cb7-15">exclude_tags <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> {</span>
+<span id="cb7-16">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Hockey"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Hockey RPF"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Men's Hockey RPF"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Sports RPF"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"RPS"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"RPF"</span>, </span>
+<span id="cb7-17">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Sports"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Rivalry"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Slash"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"F/M"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"M/M"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Podfic"</span></span>
+<span id="cb7-18">}</span>
+<span id="cb7-19"></span>
+<span id="cb7-20"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Select the top 25 most frequent trope/character tags</span></span>
+<span id="cb7-21">filtered_top_tags <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> []</span>
+<span id="cb7-22"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> tag, count <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> tag_counts.most_common(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span>):</span>
+<span id="cb7-23">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> tag <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">not</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> exclude_tags <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">and</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">len</span>(filtered_top_tags) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">25</span>:</span>
+<span id="cb7-24">        filtered_top_tags.append(tag)</span>
+<span id="cb7-25"></span>
+<span id="cb7-26"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Build NetworkX Graph</span></span>
+<span id="cb7-27">G <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> nx.Graph()</span>
+<span id="cb7-28"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> tag <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> filtered_top_tags:</span>
+<span id="cb7-29">    G.add_node(tag, count<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>tag_counts[tag])</span>
+<span id="cb7-30"></span>
+<span id="cb7-31"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Calculate co-occurrences</span></span>
+<span id="cb7-32">co_occur <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> Counter()</span>
+<span id="cb7-33"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> tags <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> tag_lists:</span>
+<span id="cb7-34">    selected_in_work <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> [t <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> t <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> tags <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> t <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> filtered_top_tags]</span>
+<span id="cb7-35">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">len</span>(selected_in_work) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>:</span>
+<span id="cb7-36">        <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> p1, p2 <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> itertools.combinations(<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">sorted</span>(selected_in_work), <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>):</span>
+<span id="cb7-37">            co_occur[(p1, p2)] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb7-38"></span>
+<span id="cb7-39"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Add edges above threshold 60</span></span>
+<span id="cb7-40"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> (p1, p2), weight <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> co_occur.items():</span>
+<span id="cb7-41">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> weight <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">60</span>:</span>
+<span id="cb7-42">        G.add_edge(p1, p2, weight<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>weight)</span>
+<span id="cb7-43"></span>
+<span id="cb7-44"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Remove isolate nodes for clean layout</span></span>
+<span id="cb7-45">isolates <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">list</span>(nx.isolates(G))</span>
+<span id="cb7-46">G.remove_nodes_from(isolates)</span>
+<span id="cb7-47"></span>
+<span id="cb7-48"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Plot the network</span></span>
+<span id="cb7-49">plt.figure(figsize<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">13</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">13</span>))</span>
+<span id="cb7-50"></span>
+<span id="cb7-51"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Kamada-Kawai layout spaces out clusters and components naturally</span></span>
+<span id="cb7-52">pos <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> nx.kamada_kawai_layout(G)</span>
+<span id="cb7-53"></span>
+<span id="cb7-54"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Node sizes and color map based on category</span></span>
+<span id="cb7-55">node_sizes <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> [G.nodes[n][<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'count'</span>] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.5</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> n <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> G.nodes()]</span>
+<span id="cb7-56"></span>
+<span id="cb7-57">node_colors <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> []</span>
+<span id="cb7-58"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> n <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> G.nodes():</span>
+<span id="cb7-59">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Shane"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> n <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">or</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Ilya"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> n <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">or</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Heated Rivalry"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> n:</span>
+<span id="cb7-60">        node_colors.append(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'#e06666'</span>) <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Warm Coral (Characters)</span></span>
+<span id="cb7-61">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">elif</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Angst"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> n <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">or</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Hurt"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> n:</span>
+<span id="cb7-62">        node_colors.append(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'#9b59b6'</span>) <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Purple (Angst / Hurt)</span></span>
+<span id="cb7-63">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">else</span>:</span>
+<span id="cb7-64">        node_colors.append(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'#4596b5'</span>) <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Ice Teal (Fluff / Tropes)</span></span>
+<span id="cb7-65"></span>
+<span id="cb7-66"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Normalize edge weights for width and opacity</span></span>
+<span id="cb7-67">edges <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> G.edges()</span>
+<span id="cb7-68">weights <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> [G[u][v][<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'weight'</span>] <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> u, v <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> edges]</span>
+<span id="cb7-69">max_w <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">max</span>(weights) <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> weights <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">else</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb7-70">edge_widths <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> [(w <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> max_w) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">6</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.8</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> w <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> weights]</span>
+<span id="cb7-71">edge_alphas <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> [<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">max</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.15</span>, <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">min</span>(w <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> max_w <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.7</span>, <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.7</span>)) <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> w <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> weights]</span>
+<span id="cb7-72"></span>
+<span id="cb7-73"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Draw network elements</span></span>
+<span id="cb7-74">nx.draw_networkx_nodes(G, pos, node_size<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>node_sizes, node_color<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>node_colors, </span>
+<span id="cb7-75">                       alpha<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.9</span>, edgecolors<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'#444444'</span>, linewidths<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.2</span>)</span>
+<span id="cb7-76"></span>
+<span id="cb7-77"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> (u, v), width, alpha <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">zip</span>(edges, edge_widths, edge_alphas):</span>
+<span id="cb7-78">    nx.draw_networkx_edges(G, pos, edgelist<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>[(u, v)], width<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>width, </span>
+<span id="cb7-79">                           edge_color<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'#cccccc'</span>, alpha<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>alpha)</span>
+<span id="cb7-80"></span>
+<span id="cb7-81"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Set custom limits with padding to avoid legend overlap</span></span>
+<span id="cb7-82">x_vals <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> [p[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>] <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> p <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> pos.values()]</span>
+<span id="cb7-83">y_vals <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> [p[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>] <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> p <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> pos.values()]</span>
+<span id="cb7-84">x_min, x_max <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">min</span>(x_vals), <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">max</span>(x_vals)</span>
+<span id="cb7-85">y_min, y_max <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">min</span>(y_vals), <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">max</span>(y_vals)</span>
+<span id="cb7-86">x_pad <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> (x_max <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> x_min) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.1</span></span>
+<span id="cb7-87">y_pad <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> (y_max <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> y_min) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.1</span></span>
+<span id="cb7-88">plt.xlim(x_min <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> x_pad, x_max <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> x_pad <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.8</span>)</span>
+<span id="cb7-89">plt.ylim(y_min <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> y_pad, y_max <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> y_pad)</span>
+<span id="cb7-90"></span>
+<span id="cb7-91"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Draw labels with white outline paths for maximum legibility</span></span>
+<span id="cb7-92"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> node, (x, y) <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> pos.items():</span>
+<span id="cb7-93">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">try</span>:</span>
+<span id="cb7-94">        clean_label <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> node.encode().decode(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'unicode-escape'</span>)</span>
+<span id="cb7-95">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">except</span>:</span>
+<span id="cb7-96">        clean_label <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> node</span>
+<span id="cb7-97">        </span>
+<span id="cb7-98">    txt <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> plt.text(x, y <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.04</span>, clean_label, fontsize<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>, ha<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'center'</span>, va<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'bottom'</span>, </span>
+<span id="cb7-99">                   fontweight<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'bold'</span>, color<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'#333333'</span>)</span>
+<span id="cb7-100">    txt.set_path_effects([</span>
+<span id="cb7-101">        path_effects.Stroke(linewidth<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3.5</span>, foreground<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'white'</span>),</span>
+<span id="cb7-102">        path_effects.Normal()</span>
+<span id="cb7-103">    ])</span>
+<span id="cb7-104"></span>
+<span id="cb7-105"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Draw Legend (Key)</span></span>
+<span id="cb7-106"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> matplotlib.patches <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> Patch</span>
+<span id="cb7-107">legend_elements <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> [</span>
+<span id="cb7-108">    Patch(facecolor<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'#e06666'</span>, edgecolor<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'#444444'</span>, label<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Characters &amp; Pairings'</span>),</span>
+<span id="cb7-109">    Patch(facecolor<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'#9b59b6'</span>, edgecolor<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'#444444'</span>, label<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Angst / Hurt &amp; Comfort'</span>),</span>
+<span id="cb7-110">    Patch(facecolor<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'#4596b5'</span>, edgecolor<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'#444444'</span>, label<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Fluff / Trope Setting'</span>)</span>
+<span id="cb7-111">]</span>
+<span id="cb7-112">plt.legend(handles<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>legend_elements, loc<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'upper right'</span>, frameon<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>, fontsize<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>, </span>
+<span id="cb7-113">           facecolor<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'white'</span>, edgecolor<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'#dddddd'</span>, title<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Tag Categories'</span>, </span>
+<span id="cb7-114">           title_fontproperties<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>{<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'weight'</span>: <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'bold'</span>})</span>
+<span id="cb7-115"></span>
+<span id="cb7-116">plt.title(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Hockey Fanfiction Trope &amp; Character Tag Network</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">(Co-occurrence &gt;= 60 works)"</span>, </span>
+<span id="cb7-117">          fontsize<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">16</span>, fontweight<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'bold'</span>, pad<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">25</span>)</span>
+<span id="cb7-118">plt.axis(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'off'</span>)</span>
+<span id="cb7-119">plt.tight_layout()</span>
+<span id="cb7-120">plt.show()</span></code></pre></div></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://srwis.github.io/personal_site/posts/hockey_fic_visualization/hockey_fic_visualization_files/figure-html/cell-7-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="what-happened-in-2024-the-fandom-baseline-shift" class="level2">
+<h2 class="anchored" data-anchor-id="what-happened-in-2024-the-fandom-baseline-shift">6. What Happened in 2024? The Fandom Baseline Shift</h2>
+<p>Before the massive TV show explosion in late 2025, our data show a moderate but noticeable rise in hockey fics during <strong>2024</strong> (jumping from <strong>628 fics in 2023 to 768 fics in 2024</strong>).</p>
+<p>Is this due to the release of the book <em>Game Changers</em>? Actually, no! The publishing dates tell a different story: - <em>Game Changers</em> (Book 1) was published in <strong>2018</strong>. - <em>Heated Rivalry</em> (Book 2) was published in <strong>March 2019</strong>. - <em>The Long Game</em> (Shane and Ilya’s sequel) was published in <strong>April 2022</strong>.</p>
+<p>Three primary cultural factors explain the 2024 baseline shift:</p>
+<ol type="1">
+<li><strong>The BookTok “Hockey Romance” Wave</strong>: Throughout 2023 and 2024, hockey romance became a massive viral sensation on TikTok. Driven by Hannah Grace’s <em>Icebreaker</em> (released in late 2022 but dominating social media throughout 2023 and 2024), millions of new readers were introduced to the “hockey player romance” trope, bringing a huge influx of fans into AO3’s hockey fanfiction space.</li>
+<li><strong>Pre-Production Rumors &amp; Option Hype</strong>: Jacob Tierney contacted Rachel Reid to option the series in late 2023, and development/screenwriting took place throughout 2024. Casting discussions and pre-production rumors circulated in online romance spaces, generating early excitement and prompting authors to write fics before the TV show’s formal release in 2025.</li>
+<li><strong>Social Media Growth of Real-Life NHL RPF</strong>: Real-life hockey fan communities (NHL RPF) experienced massive growth on social media platforms like Tumblr, Twitter, and TikTok in 2023-2024. In our database, general Hockey RPF tags jumped from 184 fics in 2023 to 246 in 2024, increasing the baseline volume of hockey fics overall.</li>
+</ol>
+</section>
+<section id="key-insights" class="level2">
+<h2 class="anchored" data-anchor-id="key-insights">7. Key Insights</h2>
+<ul>
+<li><strong>Tagging Paradigms</strong>: The streamgraph shows a major transition in fandom tags between 2018 and 2019, where <code>["Hockey RPF"]</code> was replaced by <code>["Men's Hockey RPF"]</code> as the primary classification on AO3.</li>
+<li><strong>The TV Show Boom</strong>: The TV series premiere of <em>Heated Rivalry</em> in late November 2025 created a massive surge of new works, visible in the dramatic expansion at the right end of the streamgraph (late 2025 and 2026).</li>
+<li><strong>Fandom Share</strong>: While the <em>Heated Rivalry (TV)</em> tags are growing rapidly, the historical corpus is still dominated by the broader <code>["Hockey RPF"]</code> and <code>["Men's Hockey RPF"]</code> categories.</li>
+<li><strong>Subcategory Insights</strong>: Breaking down the combined tags reveals that the general/older tagging conventions represent the largest share of Hockey RPF, but the TV adaptation of Heated Rivalry has caused a huge surge in fics that reference both the TV show and Rachel Reid’s original book series.</li>
+<li><strong>Thematic Clusters</strong>: The network graph shows clear thematic sub-communities. We see an <strong>Angst and Hurt/Comfort</strong> cluster (purple nodes), a <strong>Romance and Relationship</strong> cluster (right-side teal nodes), and a <strong>Sex/Smut</strong> cluster (left-side teal nodes). The central hubs of the network remain <code>Fluff</code> and <code>Alternate Universe - Hockey</code>.</li>
+</ul>
+
+
+</section>
+</section>
+
+ ]]></description>
+  <guid>https://srwis.github.io/personal_site/posts/hockey_fic_visualization/hockey_fic_visualization.html</guid>
+  <pubDate>Wed, 17 Jun 2026 04:00:00 GMT</pubDate>
+</item>
 <item>
   <title>Predicting NWSL Goals with PyMC and BART</title>
   <dc:creator>Sadie Wisotsky</dc:creator>
@@ -132,7 +3091,6 @@ font-style: inherit;">'category'</span>).cat.codes)</span>
 <span id="cb2-11"></span></code></pre></div></div>
 </details>
 </div>
-<p>then I just want to peak out how many seasons we are working with</p>
 <div id="5cbc2f4e" class="cell" data-execution_count="70">
 <details class="code-fold">
 <summary>Code</summary>
@@ -147,7 +3105,6 @@ font-style: inherit;">'season'</span>].unique()</span></code></pre></div></div>
 <pre><code>array([2025, 2024, 2023, 2021, 2019])</code></pre>
 </div>
 </div>
-<p>and split the data up into test and train.</p>
 <div id="1298048f" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -221,11 +3178,7 @@ background-color: null;
 font-style: inherit;">1</span>)</span></code></pre></div></div>
 </details>
 </div>
-</section>
-<section id="building-the-model" class="level3">
-<h3 class="anchored" data-anchor-id="building-the-model">2. Building the model</h3>
-<p>Since goals are discrete counts (you can’t score 1.5 goals in real life), a Poisson distribution makes the most sense. The BART piece acts as a flexible layer to estimate the scoring rate.</p>
-<p>We are also going to wrap our inputs in <code>pm.Data</code>. This is a handy PyMC trick that lets us easily swap out the historical data for the 2025 schedule later on.</p>
+<p>define bart. use a poisson distribution for goal scored because that is the most commonly used one for soccer goals and goals have to be integers. You can’t score 1.7 goals.</p>
 <div id="54058fd4" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -300,10 +3253,7 @@ background-color: null;
 font-style: inherit;">False</span>)</span></code></pre></div></div>
 </details>
 </div>
-</section>
-<section id="what-did-the-model-actually-learn" class="level3">
-<h3 class="anchored" data-anchor-id="what-did-the-model-actually-learn">3. What did the model actually learn?</h3>
-<p>Before we start predicting the future, it is worth looking under the hood. PyMC-BART gives us some great built-in plots to see what the trees figured out.</p>
+<p>check some plots and convergence of the MCMC chains</p>
 <div id="042c0124" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -411,7 +3361,6 @@ font-style: inherit;">4</span>]})</span>
 </div>
 </div>
 </div>
-<p>We can also run partial dependence plots to isolate specific variables. For example, plotting the venue feature will show you the exact mathematical bump a team gets from playing at home.</p>
 <div id="2519bc61" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -455,7 +3404,6 @@ font-style: inherit;">False</span></span>
 <span id="cb11-12">plt.show()</span></code></pre></div></div>
 </details>
 </div>
-<p>Lets look at variable importance. This tells us which factors actually drive goal scoring. No big surprise here: the team attacking and the opponent defending matter the most.</p>
 <div id="c169693b" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -490,11 +3438,6 @@ font-style: inherit;">=</span> pmb.compute_variable_importance(trace_nwsl, mu_ba
 </div>
 </div>
 </div>
-</section>
-<section id="forecasting-the-2025-season" class="level3">
-<h3 class="anchored" data-anchor-id="forecasting-the-2025-season">4. Forecasting the 2025 season</h3>
-<p>Now for the fun part. We swap our historical schedule for the 2025 fixtures using <code>pm.set_data</code>.</p>
-<p>There is one little PyMC quirk to keep in mind here. We have to pass the model a dummy target array full of zeros that matches the exact length of the 2025 schedule. This just tricks the model into resizing its output correctly.</p>
 <div id="1ce5ba97" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -637,10 +3580,6 @@ Sampling ... <span style="color:rgb(23,100,244)">━━━━━━━━━━�
 15    2025     1   14       1.22275</code></pre>
 </div>
 </div>
-</section>
-<section id="did-it-work" class="level3">
-<h3 class="anchored" data-anchor-id="did-it-work">5. Did it work?</h3>
-<p>To see how well we did, we can calculate the Mean Absolute Error for individual games. But like I mentioned earlier, single soccer games are incredibly noisy. So we can calculate the game by game error.</p>
 <div id="72b2b37e" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -812,7 +3751,6 @@ Matches where actual goals differed most from predicted:
 134      San Diego Wave     Louisville        4.0       1.19100 -2.80900    2.80900</code></pre>
 </div>
 </div>
-<p>But a much better sanity check is to add up the predicted goals for the entire season and compare them to what actually happened.</p>
 <div id="1ac01321" class="cell" data-execution_count="125">
 <details class="code-fold">
 <summary>Code</summary>
@@ -1001,7 +3939,6 @@ North Carolina Courage             18.0            18.50425
    Kansas City Current             29.0            17.85525</code></pre>
 </div>
 </div>
-<p>If you look at the chart and see a team scoring way more in real life than the BART model predicted, there are usually two explanations. Either they got insanely lucky with their finishing all season, or they signed a major offensive superstar that our pre-2025 data just didn’t know about yet. Although 15 of the goals for the Kansas City Current came from Temwa Chaŵinga a player they have had signed since 2024 so it might also be a combination of how players on other teams shifted and defensive signings.</p>
 
 
 </section>

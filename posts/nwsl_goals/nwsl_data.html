@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.8.27">
+<meta name="generator" content="quarto-1.9.37">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -11,6 +11,9 @@
 
 <title>Predicting NWSL Goals with PyMC and BART – Biological Data Science</title>
 <style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -69,19 +72,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <meta name="quarto:offset" content="../../">
 <script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="../../site_libs/quarto-html/popper.min.js"></script>
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-4d9afe2b8d18ee9fa5d0d57b5ed4214d.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-d0ae9245876894da5ac7e18953ecc5cc.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-4ca60ae4436f1b71a49a92654f7c5565.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../../site_libs/bootstrap/bootstrap-dark-57d1a11dda7ad1e27874b8787b40244b.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
-<link href="../../site_libs/bootstrap/bootstrap-4ca60ae4436f1b71a49a92654f7c5565.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-ab75dbccb93b33d634abb22a2d1567c6.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-d9576e8ad31df85a4576a6e072d53017.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-ab75dbccb93b33d634abb22a2d1567c6.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -228,7 +230,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<p>then I just want to peak out how many seasons we are working with</p>
 <div id="5cbc2f4e" class="cell" data-execution_count="70">
 <details class="code-fold">
 <summary>Code</summary>
@@ -239,7 +240,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <pre><code>array([2025, 2024, 2023, 2021, 2019])</code></pre>
 </div>
 </div>
-<p>and split the data up into test and train.</p>
 <div id="1298048f" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -257,11 +257,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>infer_features <span class="op">=</span> infer_df[cat_cols].fillna(<span class="op">-</span><span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section>
-<section id="building-the-model" class="level3">
-<h3 class="anchored" data-anchor-id="building-the-model">2. Building the model</h3>
-<p>Since goals are discrete counts (you can’t score 1.5 goals in real life), a Poisson distribution makes the most sense. The BART piece acts as a flexible layer to estimate the scoring rate.</p>
-<p>We are also going to wrap our inputs in <code>pm.Data</code>. This is a handy PyMC trick that lets us easily swap out the historical data for the 2025 schedule later on.</p>
+<p>define bart. use a poisson distribution for goal scored because that is the most commonly used one for soccer goals and goals have to be integers. You can’t score 1.7 goals.</p>
 <div id="54058fd4" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -283,10 +279,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    trace_nwsl <span class="op">=</span> pm.sample(random_seed<span class="op">=</span>RANDOM_SEED,quiet<span class="op">=</span><span class="va">True</span>, progressbar<span class="op">=</span><span class="va">False</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-</section>
-<section id="what-did-the-model-actually-learn" class="level3">
-<h3 class="anchored" data-anchor-id="what-did-the-model-actually-learn">3. What did the model actually learn?</h3>
-<p>Before we start predicting the future, it is worth looking under the hood. PyMC-BART gives us some great built-in plots to see what the trees figured out.</p>
+<p>check some plots and convergence of the MCMC chains</p>
 <div id="042c0124" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -350,7 +343,6 @@ mu_bart[1066] -2.350  0.361  -3.045   -1.722   1.00     385.0
 </div>
 </div>
 </div>
-<p>We can also run partial dependence plots to isolate specific variables. For example, plotting the venue feature will show you the exact mathematical bump a team gets from playing at home.</p>
 <div id="2519bc61" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -368,7 +360,6 @@ mu_bart[1066] -2.350  0.361  -3.045   -1.722   1.00     385.0
 <span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<p>Lets look at variable importance. This tells us which factors actually drive goal scoring. No big surprise here: the team attacking and the opponent defending matter the most.</p>
 <div id="c169693b" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -399,11 +390,6 @@ mu_bart[1066] -2.350  0.361  -3.045   -1.722   1.00     385.0
 </div>
 </div>
 </div>
-</section>
-<section id="forecasting-the-2025-season" class="level3">
-<h3 class="anchored" data-anchor-id="forecasting-the-2025-season">4. Forecasting the 2025 season</h3>
-<p>Now for the fun part. We swap our historical schedule for the 2025 fixtures using <code>pm.set_data</code>.</p>
-<p>There is one little PyMC quirk to keep in mind here. We have to pass the model a dummy target array full of zeros that matches the exact length of the 2025 schedule. This just tricks the model into resizing its output correctly.</p>
 <div id="1ce5ba97" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -463,10 +449,6 @@ Sampling ... <span style="color:rgb(23,100,244)">━━━━━━━━━━�
 15    2025     1   14       1.22275</code></pre>
 </div>
 </div>
-</section>
-<section id="did-it-work" class="level3">
-<h3 class="anchored" data-anchor-id="did-it-work">5. Did it work?</h3>
-<p>To see how well we did, we can calculate the Mean Absolute Error for individual games. But like I mentioned earlier, single soccer games are incredibly noisy. So we can calculate the game by game error.</p>
 <div id="72b2b37e" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -518,7 +500,6 @@ Matches where actual goals differed most from predicted:
 134      San Diego Wave     Louisville        4.0       1.19100 -2.80900    2.80900</code></pre>
 </div>
 </div>
-<p>But a much better sanity check is to add up the predicted goals for the entire season and compare them to what actually happened.</p>
 <div id="1ac01321" class="cell" data-execution_count="125">
 <details class="code-fold">
 <summary>Code</summary>
@@ -589,7 +570,6 @@ North Carolina Courage             18.0            18.50425
    Kansas City Current             29.0            17.85525</code></pre>
 </div>
 </div>
-<p>If you look at the chart and see a team scoring way more in real life than the BART model predicted, there are usually two explanations. Either they got insanely lucky with their finishing all season, or they signed a major offensive superstar that our pre-2025 data just didn’t know about yet. Although 15 of the goals for the Kansas City Current came from Temwa Chaŵinga a player they have had signed since 2024 so it might also be a combination of how players on other teams shifted and defensive signings.</p>
 
 
 </section>
