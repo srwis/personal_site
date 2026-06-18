@@ -1,7 +1,12 @@
 /* css styles */
 
 /* Ensure all images inside blog posts are responsive and scale to container width */
-img, .cell-output-display img {
-    max-width: 100%;
+img, .cell-output-display img, .figure-img {
+    max-width: 100% !important;
     height: auto !important;
+}
+
+/* Ensure figures (which are display: inline-block by default in Bootstrap) do not exceed container width */
+figure, .figure {
+    max-width: 100%;
 }
