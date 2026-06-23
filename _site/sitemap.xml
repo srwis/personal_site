@@ -1,43 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://srwis.github.io/personal_site/posts/proteomics_learning/index.html</loc>
-    <lastmod>2026-06-23T16:24:15.268Z</lastmod>
+    <loc>https://srwis.github.io/personal_site/posts/scrnaseq_seurat_part1/index.html</loc>
+    <lastmod>2026-06-23T16:41:03.327Z</lastmod>
   </url>
   <url>
-    <loc>https://srwis.github.io/personal_site/posts/papers/index.html</loc>
-    <lastmod>2026-03-25T13:19:16.533Z</lastmod>
-  </url>
-  <url>
-    <loc>https://srwis.github.io/personal_site/posts/LLM_evaluation/index.html</loc>
-    <lastmod>2026-03-30T19:42:23.862Z</lastmod>
-  </url>
-  <url>
-    <loc>https://srwis.github.io/personal_site/posts/hockey_fic_visualization/hockey_fic_visualization.html</loc>
-    <lastmod>2026-06-18T18:56:39.521Z</lastmod>
-  </url>
-  <url>
-    <loc>https://srwis.github.io/personal_site/index.html</loc>
-    <lastmod>2026-02-23T16:28:03.703Z</lastmod>
-  </url>
-  <url>
-    <loc>https://srwis.github.io/personal_site/about.html</loc>
-    <lastmod>2026-03-23T19:19:16.926Z</lastmod>
-  </url>
-  <url>
-    <loc>https://srwis.github.io/personal_site/posts/data_exploration/index.html</loc>
-    <lastmod>2026-03-25T13:19:11.155Z</lastmod>
-  </url>
-  <url>
-    <loc>https://srwis.github.io/personal_site/posts/HyPhy-videos/index.html</loc>
-    <lastmod>2026-02-23T16:28:03.705Z</lastmod>
+    <loc>https://srwis.github.io/personal_site/posts/pins_tut/index.html</loc>
+    <lastmod>2026-02-24T15:38:38.335Z</lastmod>
   </url>
   <url>
     <loc>https://srwis.github.io/personal_site/posts/nwsl_goals/nwsl_data.html</loc>
     <lastmod>2026-06-17T20:19:30.980Z</lastmod>
   </url>
   <url>
-    <loc>https://srwis.github.io/personal_site/posts/pins_tut/index.html</loc>
-    <lastmod>2026-02-24T15:38:38.335Z</lastmod>
+    <loc>https://srwis.github.io/personal_site/posts/HyPhy-videos/index.html</loc>
+    <lastmod>2026-02-23T16:28:03.705Z</lastmod>
+  </url>
+  <url>
+    <loc>https://srwis.github.io/personal_site/posts/data_exploration/index.html</loc>
+    <lastmod>2026-03-25T13:19:11.155Z</lastmod>
+  </url>
+  <url>
+    <loc>https://srwis.github.io/personal_site/about.html</loc>
+    <lastmod>2026-03-23T19:19:16.926Z</lastmod>
+  </url>
+  <url>
+    <loc>https://srwis.github.io/personal_site/index.html</loc>
+    <lastmod>2026-02-23T16:28:03.703Z</lastmod>
+  </url>
+  <url>
+    <loc>https://srwis.github.io/personal_site/posts/hockey_fic_visualization/hockey_fic_visualization.html</loc>
+    <lastmod>2026-06-18T18:56:39.521Z</lastmod>
+  </url>
+  <url>
+    <loc>https://srwis.github.io/personal_site/posts/LLM_evaluation/index.html</loc>
+    <lastmod>2026-03-30T19:42:23.862Z</lastmod>
+  </url>
+  <url>
+    <loc>https://srwis.github.io/personal_site/posts/papers/index.html</loc>
+    <lastmod>2026-03-25T13:19:16.533Z</lastmod>
+  </url>
+  <url>
+    <loc>https://srwis.github.io/personal_site/posts/proteomics_learning/index.html</loc>
+    <lastmod>2026-06-23T16:32:46.381Z</lastmod>
   </url>
 </urlset>

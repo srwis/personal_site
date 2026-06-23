@@ -1,5 +1,5 @@
 ---
-title: "Analyzing the Liver Proteome in MASH: A Walkthrough with DEP and the Madrigal Pipeline"
+title: "Analyzing the Liver Proteome in MASH: A Walkthrough with DEP"
 author: "Sadie Wisotsky"
 date: "2026-06-23"
 categories: [Proteomics, Bioinformatics, R, MASH]
@@ -14,7 +14,7 @@ format:
     code-tools: true
 ---
 
-## Introduction: The Biology of MASH and the Madrigal Pipeline
+## Introduction: The Biology of MASH 
 
 Metabolic dysfunction-associated steatohepatitis (**MASH**), formerly known as non-alcoholic steatohepatitis (**NASH**), is a severe progressive liver disease characterized by fat accumulation (steatosis), hepatocyte ballooning, inflammation, and progressive fibrosis. Without intervention, MASH can lead to cirrhosis, liver failure, and hepatocellular carcinoma (HCC).
 

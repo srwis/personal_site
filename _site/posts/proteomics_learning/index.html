@@ -9,7 +9,7 @@
 <meta name="author" content="Sadie Wisotsky">
 <meta name="dcterms.date" content="2026-06-23">
 
-<title>Analyzing the Liver Proteome in MASH: A Walkthrough with DEP and the Madrigal Pipeline – Biological Data Science</title>
+<title>Analyzing the Liver Proteome in MASH: A Walkthrough with DEP – Biological Data Science</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -187,7 +187,7 @@ window.Quarto = {
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <div class="quarto-title-block"><div><h1 class="title">Analyzing the Liver Proteome in MASH: A Walkthrough with DEP and the Madrigal Pipeline</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+      <div class="quarto-title-block"><div><h1 class="title">Analyzing the Liver Proteome in MASH: A Walkthrough with DEP</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
                                 <div class="quarto-categories">
                 <div class="quarto-category">Proteomics</div>
                 <div class="quarto-category">Bioinformatics</div>
@@ -226,7 +226,7 @@ window.Quarto = {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#introduction-the-biology-of-mash-and-the-madrigal-pipeline" id="toc-introduction-the-biology-of-mash-and-the-madrigal-pipeline" class="nav-link active" data-scroll-target="#introduction-the-biology-of-mash-and-the-madrigal-pipeline">Introduction: The Biology of MASH and the Madrigal Pipeline</a>
+  <li><a href="#introduction-the-biology-of-mash" id="toc-introduction-the-biology-of-mash" class="nav-link active" data-scroll-target="#introduction-the-biology-of-mash">Introduction: The Biology of MASH</a>
   <ul class="collapse">
   <li><a href="#mechanism-of-action-thr-β-agonism" id="toc-mechanism-of-action-thr-β-agonism" class="nav-link" data-scroll-target="#mechanism-of-action-thr-β-agonism">Mechanism of Action: THR-β Agonism</a></li>
   </ul></li>
@@ -259,8 +259,8 @@ window.Quarto = {
 
 
 
-<section id="introduction-the-biology-of-mash-and-the-madrigal-pipeline" class="level2">
-<h2 class="anchored" data-anchor-id="introduction-the-biology-of-mash-and-the-madrigal-pipeline">Introduction: The Biology of MASH and the Madrigal Pipeline</h2>
+<section id="introduction-the-biology-of-mash" class="level2">
+<h2 class="anchored" data-anchor-id="introduction-the-biology-of-mash">Introduction: The Biology of MASH</h2>
 <p>Metabolic dysfunction-associated steatohepatitis (<strong>MASH</strong>), formerly known as non-alcoholic steatohepatitis (<strong>NASH</strong>), is a severe progressive liver disease characterized by fat accumulation (steatosis), hepatocyte ballooning, inflammation, and progressive fibrosis. Without intervention, MASH can lead to cirrhosis, liver failure, and hepatocellular carcinoma (HCC).</p>
 <p>In March 2024, <strong>Madrigal Pharmaceuticals</strong> made history with the FDA approval of <strong>Resmetirom (Rezdiffra)</strong>, the first-ever approved treatment for MASH with moderate-to-advanced liver fibrosis.</p>
 <section id="mechanism-of-action-thr-β-agonism" class="level3">
@@ -893,7 +893,7 @@ window.Quarto = {
   });
   </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Analyzing the Liver Proteome in MASH: A Walkthrough with DEP and the Madrigal Pipeline"</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Analyzing the Liver Proteome in MASH: A Walkthrough with DEP"</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> "Sadie Wisotsky"</span></span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="an">date:</span><span class="co"> "2026-06-23"</span></span>
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="an">categories:</span><span class="co"> [Proteomics, Bioinformatics, R, MASH]</span></span>
@@ -908,7 +908,7 @@ window.Quarto = {
 <span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="co">    code-tools: true</span></span>
 <span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
 <span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="fu">## Introduction: The Biology of MASH and the Madrigal Pipeline</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="fu">## Introduction: The Biology of MASH </span></span>
 <span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>Metabolic dysfunction-associated steatohepatitis (**MASH**), formerly known as non-alcoholic steatohepatitis (**NASH**), is a severe progressive liver disease characterized by fat accumulation (steatosis), hepatocyte ballooning, inflammation, and progressive fibrosis. Without intervention, MASH can lead to cirrhosis, liver failure, and hepatocellular carcinoma (HCC).</span>
 <span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a></span>

@@ -3,6 +3,7 @@
     "listing": "/index.html",
     "items": [
       "/posts/proteomics_learning/index.html",
+      "/posts/scrnaseq_seurat_part1/index.html",
       "/posts/hockey_fic_visualization/hockey_fic_visualization.html",
       "/posts/nwsl_goals/nwsl_data.html",
       "/posts/LLM_evaluation/index.html",
