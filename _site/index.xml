@@ -10,7 +10,500 @@
 <atom:link href="https://srwis.github.io/personal_site/index.xml" rel="self" type="application/rss+xml"/>
 <description>Babbling about Bioinformatics</description>
 <generator>quarto-1.9.37</generator>
-<lastBuildDate>Wed, 17 Jun 2026 04:00:00 GMT</lastBuildDate>
+<lastBuildDate>Tue, 23 Jun 2026 04:00:00 GMT</lastBuildDate>
+<item>
+  <title>Analyzing the Liver Proteome in MASH: A Walkthrough with DEP and the Madrigal Pipeline</title>
+  <dc:creator>Sadie Wisotsky</dc:creator>
+  <link>https://srwis.github.io/personal_site/posts/proteomics_learning/</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<section id="introduction-the-biology-of-mash-and-the-madrigal-pipeline" class="level2">
+<h2 class="anchored" data-anchor-id="introduction-the-biology-of-mash-and-the-madrigal-pipeline">Introduction: The Biology of MASH and the Madrigal Pipeline</h2>
+<p>Metabolic dysfunction-associated steatohepatitis (<strong>MASH</strong>), formerly known as non-alcoholic steatohepatitis (<strong>NASH</strong>), is a severe progressive liver disease characterized by fat accumulation (steatosis), hepatocyte ballooning, inflammation, and progressive fibrosis. Without intervention, MASH can lead to cirrhosis, liver failure, and hepatocellular carcinoma (HCC).</p>
+<p>In March 2024, <strong>Madrigal Pharmaceuticals</strong> made history with the FDA approval of <strong>Resmetirom (Rezdiffra)</strong>, the first-ever approved treatment for MASH with moderate-to-advanced liver fibrosis.</p>
+<section id="mechanism-of-action-thr-β-agonism" class="level3">
+<h3 class="anchored" data-anchor-id="mechanism-of-action-thr-β-agonism">Mechanism of Action: THR-β Agonism</h3>
+<p>Resmetirom is a liver-directed, thyroid hormone receptor-beta (<strong>THR-β</strong>) selective agonist:</p>
+<ul>
+<li><strong>THR-β</strong> is the predominant thyroid hormone receptor in the liver and is responsible for regulating key metabolic pathways, including cholesterol metabolism, bile acid synthesis, and fatty acid <img src="https://latex.codecogs.com/png.latex?%5Cbeta">-oxidation.</li>
+<li>In MASH, liver THR-β activity is often severely depleted, leading to mitochondrial dysfunction, lipid accumulation, and lipotoxicity.</li>
+<li>By selectively binding and activating THR-β, Resmetirom restores thyroid hormone signaling in hepatocytes. This stimulates mitochondrial <img src="https://latex.codecogs.com/png.latex?%5Cbeta">-oxidation, decreases intrahepatic lipid accumulation, reduces lipotoxicity, and downregulates pro-inflammatory and pro-fibrotic pathways.</li>
+</ul>
+<p>In this walkthrough, we will use quantitative proteomics to investigate the molecular signature of MASH by analyzing public data from human liver biopsies. We will examine key markers of fibrosis and lipid metabolism that represent the downstream targets of the Madrigal therapeutic pipeline.</p>
+<hr>
+</section>
+</section>
+<section id="dataset-pride-pxd046940" class="level2">
+<h2 class="anchored" data-anchor-id="dataset-pride-pxd046940">Dataset: PRIDE PXD046940</h2>
+<p>We will analyze the public dataset <strong>PXD046940</strong> (Ma et al.&nbsp;2024, Utrecht University), titled <em>“Comprehensive PTP and proteome profiling from human liver tissues”</em>.</p>
+<p>This dataset contains label-free mass spectrometry (LC-MS/MS) proteomics data of human liver biopsies across multiple stages of liver disease:</p>
+<ol type="1">
+<li><strong>Healthy Control</strong> (Normal liver tissue)</li>
+<li><strong>Steatosis</strong> (Fatty liver, early-stage disease)</li>
+<li><strong>NASH</strong> (Inflammation and early fibrosis)</li>
+<li><strong>HCC</strong> (Hepatocellular Carcinoma, end-stage disease)</li>
+</ol>
+<p>By performing differential abundance analysis between <strong>Healthy</strong> and <strong>NASH</strong> samples, we can identify the proteins that are significantly altered during disease progression and evaluate the pathways targeted by THR-β agonists.</p>
+<hr>
+</section>
+<section id="r-analysis-workflow-using-the-dep-package" class="level2">
+<h2 class="anchored" data-anchor-id="r-analysis-workflow-using-the-dep-package">R Analysis Workflow: Using the <code>DEP</code> Package</h2>
+<p>We use the Bioconductor package <strong>DEP</strong> (Differential Enrichment analysis of Proteomics), which wraps the <strong>limma</strong> linear modeling pipeline and provides built-in tools for normalization, missing value imputation, and visualization.</p>
+<section id="project-setup-and-loading-data" class="level3">
+<h3 class="anchored" data-anchor-id="project-setup-and-loading-data">1. Project Setup and Loading Data</h3>
+<p>First, we download the processed MaxQuant <code>proteinGroups.txt</code> output file directly from the EBI PRIDE repository:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(DEP)</span>
+<span id="cb1-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(tidyverse)</span>
+<span id="cb1-3"></span>
+<span id="cb1-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Download dataset</span></span>
+<span id="cb1-5">data_url <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"https://ftp.pride.ebi.ac.uk/pride/data/archive/2024/09/PXD046940/proteinGroups.txt"</span></span>
+<span id="cb1-6">data_file <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"proteinGroups.txt"</span></span>
+<span id="cb1-7"></span>
+<span id="cb1-8"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> (<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">file.exists</span>(data_file)) {</span>
+<span id="cb1-9">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">download.file</span>(data_url, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">destfile =</span> data_file, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">mode =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"wb"</span>)</span>
+<span id="cb1-10">}</span>
+<span id="cb1-11"></span>
+<span id="cb1-12"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Load raw MaxQuant data</span></span>
+<span id="cb1-13">raw_data <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">read.delim</span>(data_file, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">header =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">sep =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\t</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">stringsAsFactors =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>)</span></code></pre></div></div>
+</section>
+<section id="filtering-contaminants-and-decoys" class="level3">
+<h3 class="anchored" data-anchor-id="filtering-contaminants-and-decoys">2. Filtering Contaminants and Decoys</h3>
+<p>We filter out standard database search artifacts: reverse database hits, potential contaminants, and proteins only identified by modified sites.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1">filtered_data <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> raw_data <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb2-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">is.na</span>(Reverse) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|</span> Reverse <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"+"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb2-3">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">is.na</span>(Potential.contaminant) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|</span> Potential.contaminant <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"+"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb2-4">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">is.na</span>(Only.identified.by.site) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|</span> Only.identified.by.site <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"+"</span>)</span></code></pre></div></div>
+</section>
+<section id="setting-up-the-experimental-design" class="level3">
+<h3 class="anchored" data-anchor-id="setting-up-the-experimental-design">3. Setting Up the Experimental Design</h3>
+<p>We extract the LFQ intensity columns and construct the experimental design table mapping each sample to its condition and replicate index.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1">lfq_cols <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">grep</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"^LFQ</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\\</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">.intensity</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\\</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">."</span>, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">colnames</span>(filtered_data), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">value =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>)</span>
+<span id="cb3-2"></span>
+<span id="cb3-3">experimental_design <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(</span>
+<span id="cb3-4">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">label =</span> lfq_cols,</span>
+<span id="cb3-5">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">stringsAsFactors =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span></span>
+<span id="cb3-6">) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb3-7">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(</span>
+<span id="cb3-8">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">condition =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">case_when</span>(</span>
+<span id="cb3-9">      <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str_detect</span>(label, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"(?i)Healthy"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Healthy"</span>,</span>
+<span id="cb3-10">      <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str_detect</span>(label, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"(?i)Steatosis"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Steatosis"</span>,</span>
+<span id="cb3-11">      <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str_detect</span>(label, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"(?i)C-NASH"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"NASH"</span>, </span>
+<span id="cb3-12">      <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str_detect</span>(label, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"(?i)NASH"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"NASH"</span>,   </span>
+<span id="cb3-13">      <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str_detect</span>(label, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"(?i)HCC"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"HCC"</span>,</span>
+<span id="cb3-14">      <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Other"</span></span>
+<span id="cb3-15">    )</span>
+<span id="cb3-16">  ) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb3-17">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(condition <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Other"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb3-18">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">group_by</span>(condition) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb3-19">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">replicate =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">row_number</span>()) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb3-20">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ungroup</span>()</span>
+<span id="cb3-21"></span>
+<span id="cb3-22"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Subset data columns</span></span>
+<span id="cb3-23">data_subset <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> filtered_data <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb3-24">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">select</span>(Protein.IDs, Majority.protein.IDs, Protein.names, Gene.names, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">all_of</span>(experimental_design<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>label))</span></code></pre></div></div>
+</section>
+<section id="creating-a-summarizedexperiment-object" class="level3">
+<h3 class="anchored" data-anchor-id="creating-a-summarizedexperiment-object">4. Creating a SummarizedExperiment Object</h3>
+<p>We make the gene names unique (appending numbers for duplicates) and wrap the dataset into a Bioconductor <code>SummarizedExperiment</code> object.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1">data_unique <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">make_unique</span>(data_subset, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Gene.names"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Protein.IDs"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">delim =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">";"</span>)</span>
+<span id="cb4-2">lfq_indices <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">which</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">colnames</span>(data_unique) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%in%</span> experimental_design<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>label)</span>
+<span id="cb4-3">se <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">make_se</span>(data_unique, lfq_indices, experimental_design)</span></code></pre></div></div>
+</section>
+<section id="filtering-missing-values-and-normalization" class="level3">
+<h3 class="anchored" data-anchor-id="filtering-missing-values-and-normalization">5. Filtering Missing Values and Normalization</h3>
+<p>Proteomics datasets frequently contain missing values (represented as 0 or <code>NA</code> in MaxQuant LFQ intensities). We filter out proteins that are missing across entire conditions, and normalize using <strong>variance stabilizing normalization (VSN)</strong>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Filter for proteins identified in all replicates of at least one condition</span></span>
+<span id="cb5-2">se_filtered <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter_missval</span>(se, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">thr =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>)</span>
+<span id="cb5-3"></span>
+<span id="cb5-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Normalize using VSN</span></span>
+<span id="cb5-5">se_normalized <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">normalize_vsn</span>(se_filtered)</span></code></pre></div></div>
+</section>
+<section id="missing-value-imputation" class="level3">
+<h3 class="anchored" data-anchor-id="missing-value-imputation">6. Missing Value Imputation</h3>
+<p>For the remaining missing values (typically left-censored because the protein abundance is below the mass-spectrometer’s detection limit), we perform normal-distribution-based imputation (<strong>MinProb</strong>).</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Impute using MinProb (minimal probability distribution)</span></span>
+<span id="cb6-2">se_imputed <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">impute</span>(se_normalized, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fun =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"MinProb"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">q =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.01</span>)</span></code></pre></div></div>
+</section>
+<section id="differential-abundance-testing" class="level3">
+<h3 class="anchored" data-anchor-id="differential-abundance-testing">7. Differential Abundance Testing</h3>
+<p>We fit a linear model to test for differences between conditions and healthy controls using empirical Bayes moderation.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Test differences against Healthy control</span></span>
+<span id="cb7-2">se_tested <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">test_diff</span>(se_imputed, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">type =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"control"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">control =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Healthy"</span>)</span>
+<span id="cb7-3"></span>
+<span id="cb7-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Define significant proteins (adj. p-value &lt; 0.05, Log2FC &gt; 1)</span></span>
+<span id="cb7-5">se_signif <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">add_rejections</span>(se_tested, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">alpha =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.05</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">lfc =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)</span></code></pre></div></div>
+<hr>
+</section>
+</section>
+<section id="results-and-visualizations" class="level2">
+<h2 class="anchored" data-anchor-id="results-and-visualizations">Results and Visualizations</h2>
+<p>Here are the key diagnostic and biological plots generated from the analysis:</p>
+<section id="pca-plot" class="level3">
+<h3 class="anchored" data-anchor-id="pca-plot">PCA Plot</h3>
+<p>The Principal Component Analysis (<strong>PCA</strong>) plot demonstrates clear separation between the Healthy controls, Steatosis (early fatty liver), and NASH/HCC disease stages, indicating significant global shifts in the liver proteome.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://srwis.github.io/personal_site/posts/proteomics_learning/results_pca_plot.png" class="img-fluid figure-img" style="width:85.0%"></p>
+<figcaption>PCA Plot</figcaption>
+</figure>
+</div>
+</section>
+<section id="volcano-plot-nash-vs.-healthy" class="level3">
+<h3 class="anchored" data-anchor-id="volcano-plot-nash-vs.-healthy">Volcano Plot: NASH vs.&nbsp;Healthy</h3>
+<p>The Volcano plot shows proteins that are significantly upregulated (right side) or downregulated (left side) in NASH compared to Healthy controls.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://srwis.github.io/personal_site/posts/proteomics_learning/results_volcano_nash_vs_healthy.png" class="img-fluid figure-img" style="width:85.0%"></p>
+<figcaption>Volcano Plot</figcaption>
+</figure>
+</div>
+</section>
+<section id="significant-proteins-heatmap" class="level3">
+<h3 class="anchored" data-anchor-id="significant-proteins-heatmap">Significant Proteins Heatmap</h3>
+<p>The Heatmap shows the relative abundance of the top differentially expressed proteins across all samples, grouped by disease stage.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://srwis.github.io/personal_site/posts/proteomics_learning/results_heatmap.png" class="img-fluid figure-img" style="width:70.0%"></p>
+<figcaption>Heatmap of Significant Proteins</figcaption>
+</figure>
+</div>
+<hr>
+</section>
+</section>
+<section id="biological-validation-mash-targets" class="level2">
+<h2 class="anchored" data-anchor-id="biological-validation-mash-targets">Biological Validation: MASH Targets</h2>
+<p>When we inspect key target proteins related to MASH pathology and the THR-β response, we find clear clinical trends:</p>
+<ol type="1">
+<li><strong>Fibrosis Markers (Upregulated in NASH)</strong>:
+<ul>
+<li><strong>COL1A1 / COL1A2 (Collagen Type I)</strong>: These structural proteins are highly upregulated in NASH due to hepatic stellate cell activation. Activating THR-β reduces fibrosis, which is expected to normalize these collagen levels.</li>
+<li><strong>ACTA2 (α-SMA)</strong> and <strong>TIMP1</strong>: Essential markers of active fibrogenesis. They are significantly enriched in the NASH liver samples.</li>
+</ul></li>
+<li><strong>Lipid Metabolism / β-oxidation (Downregulated in NASH)</strong>:
+<ul>
+<li><strong>CPT1A (Carnitine Palmitoyltransferase 1A)</strong>: The rate-limiting enzyme for mitochondrial fatty acid transport and <img src="https://latex.codecogs.com/png.latex?%5Cbeta">-oxidation. In NASH, it is downregulated, leading to lipid accumulation. Resmetirom treatment directly rescues and upregulates CPT1A.</li>
+<li><strong>ACOX1</strong>: Downregulated in NASH, leading to impaired peroxisomal <img src="https://latex.codecogs.com/png.latex?%5Cbeta">-oxidation.</li>
+</ul></li>
+</ol>
+<p>This proteomic profile highlights the precise metabolic and structural aberrations that the Madrigal Pharmaceuticals pipeline aims to reverse.</p>
+<hr>
+</section>
+<section id="reproducible-source-code" class="level2">
+<h2 class="anchored" data-anchor-id="reproducible-source-code">Reproducible Source Code</h2>
+<p>The full, self-contained R codebase, including the download scripts and visualization configurations, is available on GitHub:</p>
+<p>👉 <strong><a href="https://github.com/srwis/proteomics_learning">srwis/proteomics_learning (GitHub)</a></strong></p>
+
+
+<!-- -->
+
+</section>
+
+ ]]></description>
+  <category>Proteomics</category>
+  <category>Bioinformatics</category>
+  <category>R</category>
+  <category>MASH</category>
+  <guid>https://srwis.github.io/personal_site/posts/proteomics_learning/</guid>
+  <pubDate>Tue, 23 Jun 2026 04:00:00 GMT</pubDate>
+  <media:content url="https://srwis.github.io/personal_site/posts/proteomics_learning/results_volcano_nash_vs_healthy.png" medium="image" type="image/png" height="126" width="144"/>
+</item>
 <item>
   <title>AO3 Hockey Fanfiction Analysis: The ‘Heated Rivalry’ Effect</title>
   <dc:creator>Sadie Wisotsky</dc:creator>
