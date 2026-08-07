@@ -137,7 +137,7 @@ window.Quarto = {
 </script>
 
 <link rel="stylesheet" href="styles.css">
-<link rel="alternate" type="application/rss+xml" title="Biological Data Science" href="index.xml" data-external="1"></head>
+</head>
 
 <body class="nav-fixed quarto-light">
 
@@ -213,7 +213,7 @@ window.Quarto = {
 
 <div class="quarto-listing quarto-listing-container-default" id="listing-listing">
 <div class="list quarto-listing-default">
-<div class="quarto-post image-right" data-index="0" data-categories="c2hpbnklMkNSJTJDZGF0YSUyMGV4cGxvcmF0aW9uJTJDcGhhcm1hJTJDY2F1c2FsJTIwaW5mZXJlbmNlJTJDY2F1c2FsJTIwdHJlZSUyQ01hY2hpbmUlMjBMZWFybmluZw==" data-listing-date-sort="1786075200000" data-listing-file-modified-sort="1786124138940" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="78">
+<div class="quarto-post image-right" data-index="0" data-categories="c2hpbnklMkNSJTJDZGF0YSUyMGV4cGxvcmF0aW9uJTJDcGhhcm1hJTJDY2F1c2FsJTIwaW5mZXJlbmNlJTJDY2F1c2FsJTIwdHJlZSUyQ01hY2hpbmUlMjBMZWFybmluZw==" data-listing-date-sort="1786075200000" data-listing-file-modified-sort="1786125795626" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="78">
 <div class="thumbnail"><a href="./posts/Causal_Tree_App/index.html" class="no-external">
 
 <div class="listing-item-img-placeholder card-img-top" >&nbsp;</div>
@@ -241,7 +241,7 @@ window.Quarto = {
 
 </div>
 <div class="delink listing-description"><a href="./posts/Causal_Tree_App/index.html" class="no-external">
-Just want to post a quick update that I deployed a R shiny app on Posit Connect Cloud that allows you to explore data and results for a causal forest method. https://019fdd39…
+Just want to post a quick update that I deployed a R shiny app on Posit Connect Cloud that allows you to explore data and results for a causal forest method. App is here!
 </a></div>
 </div>
 <div class="metadata">
@@ -621,7 +621,7 @@ Sadie Wisotsky
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp("https:\/\/srwis\.github\.io\/personal_site\/");
+        var filterRegex = new RegExp('/' + window.location.host + '/');
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }

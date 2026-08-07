@@ -74,7 +74,7 @@
     "href": "posts/Causal_Tree_App/index.html",
     "title": "Causal Tree App",
     "section": "",
-    "text": "Causal Tree App\nJust want to post a quick update that I deployed a R shiny app on Posit Connect Cloud that allows you to explore data and results for a causal forest method. https://019fdd39-bfb0-20c4-755e-11c1dbda0af6.share.connect.posit.cloud/\nThe data currently uploaded to it is a synthetic RRP trial data set but you should be able to upload csv data and run your own analysis.\nI do need to fix the policy tree generation but it should be useful outside of that."
+    "text": "Causal Tree App\nJust want to post a quick update that I deployed a R shiny app on Posit Connect Cloud that allows you to explore data and results for a causal forest method. App is here!\nThe data currently uploaded to it is a synthetic RRP trial data set but you should be able to upload csv data and run your own analysis.\nI do need to fix the policy tree generation but it should be useful outside of that."
   },
   {
     "objectID": "posts/papers/index.html",
